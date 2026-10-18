@@ -7,7 +7,6 @@ from streamlit_folium import st_folium
 import plotly.graph_objects as go
 import json
 from datetime import datetime
-import hashlib
 
 # ==============================================================================
 # 1. HIGH-END UI & TIMES NEW ROMAN FONT INJECTION
@@ -47,12 +46,12 @@ TANZANIA_REGIONS = {
     "Zanzibar": {"lat": -6.1659, "lon": 39.2022, "mal": 8, "cholera": 300, "mmr": 78, "fic": 85, "oop": 25, "htn": 28.0, "poverty": 14, "schools": 180, "markets": 40}
 }
 
-# General EAC National Mockup Data
+# General EAC National Mockup Data (Keys fixed to match dropdown exactly)
 EAC_NATIONAL = {
     "Kenya 🇰🇪": {"lat": -0.0236, "lon": 37.9062, "mal": 45, "cholera": 90, "mmr": 342, "fic": 80, "oop": 25, "htn": 27.0, "poverty": 22, "schools": 12000, "markets": 3500},
     "Uganda 🇺🇬": {"lat": 1.3733, "lon": 32.2903, "mal": 120, "cholera": 110, "mmr": 336, "fic": 76, "oop": 32, "htn": 26.0, "poverty": 31, "schools": 9500, "markets": 2800},
-    "Rwanda 🇼": {"lat": -1.9403, "lon": 29.8739, "mal": 35, "cholera": 20, "mmr": 248, "fic": 92, "oop": 12, "htn": 21.0, "poverty": 16, "schools": 4200, "markets": 1100},
-    "Burundi 🇧": {"lat": -3.3731, "lon": 29.9189, "mal": 250, "cholera": 180, "mmr": 548, "fic": 71, "oop": 18, "htn": 18.0, "poverty": 45, "schools": 3800, "markets": 950},
+    "Rwanda 🇷🇼": {"lat": -1.9403, "lon": 29.8739, "mal": 35, "cholera": 20, "mmr": 248, "fic": 92, "oop": 12, "htn": 21.0, "poverty": 16, "schools": 4200, "markets": 1100},
+    "Burundi 🇧🇮": {"lat": -3.3731, "lon": 29.9189, "mal": 250, "cholera": 180, "mmr": 548, "fic": 71, "oop": 18, "htn": 18.0, "poverty": 45, "schools": 3800, "markets": 950},
     "South Sudan 🇸": {"lat": 6.8770, "lon": 31.3070, "mal": 310, "cholera": 220, "mmr": 1150, "fic": 55, "oop": 45, "htn": 16.0, "poverty": 62, "schools": 2100, "markets": 600}
 }
 
@@ -66,7 +65,7 @@ st.sidebar.title("🌍 EcoHealth Sentinel")
 
 if st.session_state.user is None:
     if st.session_state.auth_step == 'login':
-        st.sidebar.header("👤 Sign In")
+        st.sidebar.header(" Sign In")
         email = st.sidebar.text_input("Email Address", placeholder="name@hospital.go.tz")
         password = st.sidebar.text_input("Password", type="password")
         if st.sidebar.button("Log In", use_container_width=True) and email and password:
@@ -94,7 +93,7 @@ if st.session_state.user is None:
             st.session_state.auth_step = 'login'; st.rerun()
             
     elif st.session_state.auth_step == 'verify':
-        st.sidebar.header(" Verify Email")
+        st.sidebar.header("📧 Verify Email")
         st.sidebar.success(f"Code sent to {st.session_state.pending_user['email']}")
         code = st.sidebar.text_input("Enter 6-digit code", placeholder="123456")
         if st.sidebar.button("Verify Account", use_container_width=True):
@@ -108,23 +107,23 @@ else:
     st.sidebar.success(f"✅ {st.session_state.user['role']}")
     st.sidebar.info(f" {st.session_state.user.get('org', 'Tanzania MoH')}")
     st.sidebar.markdown("---")
-    st.sidebar.subheader(" Premium Subscription")
+    st.sidebar.subheader("🌟 Premium Subscription")
     st.sidebar.write("Unlock Advanced AI, Bulk DHIS2 Exports, and Offline CHW Mode.")
     st.sidebar.link_button("💳 Subscribe for $1/month", "https://buymeacoffee.com/ecohealth", use_container_width=True)
     st.sidebar.markdown("---")
     st.sidebar.subheader("♻️ Green AI Impact")
     st.sidebar.metric("CO2 Saved", "0.045 kg/prediction", delta="-99% vs LLMs")
-    if st.sidebar.button("🚪 Log Out", use_container_width=True): 
+    if st.sidebar.button(" Log Out", use_container_width=True): 
         st.session_state.user = None; st.session_state.auth_step = 'login'; st.rerun()
 
 # ==============================================================================
 # 4. APP SETTINGS & NAVIGATION
 # ==============================================================================
-st.sidebar.header("️ Settings")
-country = st.sidebar.selectbox("Select Country", ["Tanzania 🇿", "Kenya 🇪", "Uganda 🇬", "Rwanda 🇷🇼", "Burundi 🇧", "South Sudan 🇸🇸"])
+st.sidebar.header("⚙️ Settings")
+country = st.sidebar.selectbox("Select Country", ["Tanzania 🇹", "Kenya 🇰🇪", "Uganda 🇺🇬", "Rwanda 🇷🇼", "Burundi 🇧🇮", "South Sudan 🇸"])
 
 # Dynamic Region Selector
-if country == "Tanzania 🇹🇿":
+if country == "Tanzania 🇹":
     region = st.sidebar.selectbox("Select Region (Tanzania)", list(TANZANIA_REGIONS.keys()))
     data = TANZANIA_REGIONS[region]
     policy_text = "HSSP V, Vision 2050 & PDPA 2022"
@@ -199,7 +198,8 @@ with tab2:
 
     with col2:
         st.subheader(f"Interactive Service Map: {region}")
-        m = folium.Map(location=[data['lat'], data['lon']], zoom_start=9 if country=="Tanzania 🇹🇿" else 6, tiles="OpenStreetMap")
+        zoom_level = 9 if country == "Tanzania 🇹" else 6
+        m = folium.Map(location=[data['lat'], data['lon']], zoom_start=zoom_level, tiles="OpenStreetMap")
         
         hosp_group = FeatureGroup(name='🏥 Health Facilities')
         for i in range(5):
@@ -208,7 +208,7 @@ with tab2:
             folium.Marker(location=[lat, lon], popup=f"<b>Health Facility {i+1}</b>", icon=folium.Icon(color='red', icon='plus', prefix='fa')).add_to(hosp_group)
         hosp_group.add_to(m)
         
-        wash_group = FeatureGroup(name=' WASH Points')
+        wash_group = FeatureGroup(name='💧 WASH Points')
         for i in range(8):
             lat = data['lat'] + np.random.uniform(-0.15, 0.15)
             lon = data['lon'] + np.random.uniform(-0.15, 0.15)
@@ -245,7 +245,7 @@ with tab3:
         with st.chat_message("user"): st.markdown(prompt)
         
         if "malaria" in prompt.lower() or "cholera" in prompt.lower():
-            response = f"🚨 **Alert for {region}:** High risk detected. Malaria: {data['mal']}/1k, Cholera: {data['cholera']} cases. Recommend immediate WASH intervention and LLIN distribution."
+            response = f" **Alert for {region}:** High risk detected. Malaria: {data['mal']}/1k, Cholera: {data['cholera']} cases. Recommend immediate WASH intervention and LLIN distribution."
         elif "vaccine" in prompt.lower() or "fic" in prompt.lower():
             response = f"💉 **Immunization in {region}:** FIC is at {data['fic']}%. Below target. Recommend mop-up campaigns in rural wards."
         else:
@@ -288,4 +288,4 @@ Date: {datetime.now().strftime('%B %d, %Y')}
 References: {policy_text}, WHO Guidelines.
 """
     st.text_area("Preview", brief, height=400)
-    st.download_button(" Download Brief", brief, file_name=f"Brief_{region}_{country}.txt")
+    st.download_button("📥 Download Brief", brief, file_name=f"Brief_{region}_{country}.txt")
