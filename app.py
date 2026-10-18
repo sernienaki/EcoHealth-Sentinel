@@ -151,10 +151,57 @@ if 'theme' not in st.session_state: st.session_state.theme = 'Light Mode'
 
 def get_theme_css(theme):
     if theme == 'Dark Mode':
-        return """<style>@import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');.stApp, .stSidebar, h1, h2, h3, h4, p, div, span, label, button, [data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] {font-family: 'Times New Roman', Times, serif !important;}.stApp { background-color: #0e1117; color: #fafafa; }.stSidebar { background-color: #1a1d24; }[data-testid="stMetric"] {background-color: #262730; padding: 15px; border-radius: 8px; border-left: 5px solid #4da6ff; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}[data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] { color: #fafafa !important; }button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }.stTabs [data-baseweb="tab-list"] { background-color: #1a1d24; }.stTextInput > div > div > input, .stSelectbox > div > div > div, .stRadio > label { color: #fafafa !important; }</style>"""
+        return """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+        
+        /* Only apply font to text, NOT icons or layout divs */
+        h1, h2, h3, h4, p, label, button, 
+        [data-testid="stMetricLabel"], 
+        [data-testid="stMetricValue"], 
+        [data-testid="stMetricDelta"],
+        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        .stApp { background-color: #0e1117; color: #fafafa; }
+        .stSidebar { background-color: #1a1d24; }
+        
+        [data-testid="stMetric"] {
+            background-color: #262730; padding: 15px; border-radius: 8px; 
+            border-left: 5px solid #4da6ff; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        [data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] { 
+            color: #fafafa !important; 
+        }
+        
+        button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }
+        .stTabs [data-baseweb="tab-list"] { background-color: #1a1d24; }
+        .stTextInput > div > div > input, .stSelectbox > div > div > div, .stRadio > label { color: #fafafa !important; }
+        </style>
+        """
     else:
-        return """<style>@import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');.stApp, .stSidebar, h1, h2, h3, h4, p, div, span, label, button, [data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] {font-family: 'Times New Roman', Times, serif !important;}[data-testid="stMetric"] {background-color: #f8f9fa; padding: 15px; border-radius: 8px; border-left: 5px solid #0066cc; box-shadow: 0 4px 6px rgba(0,0,0,0.1);}button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }</style>"""
-
+        return """
+        <style>
+        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
+        
+        /* Only apply font to text, NOT icons or layout divs */
+        h1, h2, h3, h4, p, label, button, 
+        [data-testid="stMetricLabel"], 
+        [data-testid="stMetricValue"], 
+        [data-testid="stMetricDelta"],
+        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
+            font-family: 'Times New Roman', Times, serif !important;
+        }
+        
+        [data-testid="stMetric"] {
+            background-color: #f8f9fa; padding: 15px; border-radius: 8px; 
+            border-left: 5px solid #0066cc; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }
+        </style>
+        """
 st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
 
 # ==============================================================================
