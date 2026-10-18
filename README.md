@@ -1,2 +1,3 @@
 # EcoHealth-Sentinel
 ITU Hackathon UAE - Team Aequisalus
+EcoHealth Sentinel is designed for long-term sustainability. Financially, it operates on a freemium SaaS model ($1/month for premium features) to ensure it does not rely solely on donor funding. Technically, it is built on open standards (HL7 FHIR, DHIS2) and released under the MIT Open Source License, ensuring the Tanzanian Ministry of Health retains full ownership and avoids vendor lock-in. Environmentally, it utilizes lightweight, energy-efficient predictive models (Green AI) to minimize the carbon footprint of digital health infrastructure.
