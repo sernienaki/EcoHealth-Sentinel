@@ -9,15 +9,14 @@ import json
 from datetime import datetime
 
 # ==============================================================================
-# 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI) - UPDATED WITH 20 INDICATORS
+# 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
 # ==============================================================================
 T = {
     'en': {
-        'title': "EcoHealth Sentinel",
-        'welcome': "Welcome", 'verified': "Verified Professional", 'settings': "⚙️ Settings",
+        'title': "EcoHealth Sentinel", 'welcome': "Welcome", 'verified': "Verified Professional", 'settings': "⚙️ Settings",
         'country': "Select Country", 'region': "Select Region (Tanzania)", 'role': "Your Role / Jukumu Lako",
         'lang': "Language / Lugha", 'theme': "Theme / Mandhari",
-        'tab1': "📊 Executive Dashboard", 'tab2': "🌍 Socio-Ecological & Services", 'tab3': "🤖 AI, FHIR & USSD", 'tab4': " Policy Brief",
+        'tab1': " Executive Dashboard", 'tab2': "🌍 Socio-Ecological & Services", 'tab3': "🤖 AI, FHIR & USSD", 'tab4': "📄 Policy Brief",
         'policy': "Policy: HSSP V, Vision 2050 & PDPA 2022 | ITU ML Pipeline Compliant",
         'surveillance': "Comprehensive Public Health Surveillance",
         'dhis2_header': "20 Core DHIS2 Indicators (WHO & HSSP V Aligned)",
@@ -47,11 +46,11 @@ T = {
         'hw': "Health Worker Density (per 1k)", 'hw_target': 0.45,
         'oop': "Out-of-Pocket Expenditure (%)", 'oop_target': 15,
         'poverty': "Poverty Index", 'schools': "Schools", 'markets': "Markets",
-        'social': "Social & Economic Indicators",
+        'social': "Social & Economic Indicators", # FIXED KEY
         'map_guide': "How to Read This Map",
         'map_guide_text': "**Red Pins:** Health Facilities\n**Blue Circles:** WASH Points\n**Green Squares:** Schools\n**Orange Triangles:** Markets\n*Toggle layers using the icon on the top right.*",
         'interactive_map': "Interactive Service Map",
-        'ai_header': "AI Agent & Interoperability",
+        'ai_header': "AI Agent & Voice Assistant",
         'chat_placeholder': "Ask about health risks in {region}",
         'ussd_header': "📱 EcoHealth USSD Services", 'ussd_subheader': "Access on any mobile phone (No smartphone required)",
         'ussd_start': "View USSD Menu Flow", 'ussd_session': "USSD Session Flow",
@@ -78,11 +77,10 @@ T = {
         'fhir_title': "GoTHoMIS FHIR Payload",
     },
     'sw': {
-        'title': "EcoHealth Sentinel",
-        'welcome': "Karibu", 'verified': "Mtaalamu Aliyethibitishwa", 'settings': "⚙️ Mipangilio",
+        'title': "EcoHealth Sentinel", 'welcome': "Karibu", 'verified': "Mtaalamu Aliyethibitishwa", 'settings': "⚙️ Mipangilio",
         'country': "Chagua Nchi", 'region': "Chagua Mkoa (Tanzania)", 'role': "Jukumu Lako / Your Role",
         'lang': "Lugha / Language", 'theme': "Mandhari / Theme",
-        'tab1': " Dashibodi Kuu", 'tab2': "🌍 Jamii na Huduma", 'tab3': "🤖 AI, FHIR na USSD", 'tab4': "📄 Hati ya Sera",
+        'tab1': "📊 Dashibodi Kuu", 'tab2': " Jamii na Huduma", 'tab3': "🤖 AI, FHIR na USSD", 'tab4': "📄 Hati ya Sera",
         'policy': "Sera: HSSP V, Vision 2050 na PDPA 2022 | ITU ML Pipeline",
         'surveillance': "Ufuatiliaji wa Afya ya Umma",
         'dhis2_header': "Viashiria 20 vya Msingi vya DHIS2 (WHO na HSSP V)",
@@ -112,13 +110,13 @@ T = {
         'hw': "Msongamano wa Watumishi wa Afya", 'hw_target': 0.45,
         'oop': "Gharama ya Mfukoni (%)", 'oop_target': 15,
         'poverty': "Kiwango cha Umaskini", 'schools': "Shule", 'markets': "Masoko",
-        'social': "Viashiria vya Kijamii na Kiuchumi", 
+        'social': "Viashiria vya Kijamii na Kiuchumi", # FIXED KEY
         'map_guide': "Jinsi ya Kusoma Ramani",
         'map_guide_text': "**Vipini Vyekundu:** Vituo vya Afya\n**Vidudu vya Bluu:** Vyanzo vya Maji\n**Mraba wa Kijani:** Shule\n**Pembetatu ya Chungwa:** Masoko\n*Badilisha tabaka kwa kutumia ikoni juu kulia.*",
         'interactive_map': "Ramani ya Huduma",
-        'ai_header': "Wakala wa AI na Uunganishaji",
+        'ai_header': "Wakala wa AI na Msaidizi wa Sauti",
         'chat_placeholder': "Uliza kuhusu hatari za afya katika {region}",
-        'ussd_header': " Huduma za USSD za EcoHealth", 'ussd_subheader': "Tumia simu yoyote (Haitajani smartphone)",
+        'ussd_header': "📱 Huduma za USSD za EcoHealth", 'ussd_subheader': "Tumia simu yoyote (Haitajani smartphone)",
         'ussd_start': "Tazama Mtiririko wa Menyu ya USSD", 'ussd_session': "Mtiririko wa USSD",
         'network_codes': "Namba za Ufupishi za Mitandao (Tanzania)",
         'network_desc': "Piga namba hizi kwenye mtandao wako kufikia huduma za USSD za EcoHealth:",
@@ -139,7 +137,7 @@ T = {
         'orgs': ["Wizara ya Afya", "NGO", "Taasisi ya Utafiti", "Mhudumu wa Afya wa Jamii", "Nyingine"],
         'alert_malaria': "🚨 **Tahadhari kwa {region}:** Hatari kubwa imegunduliwa. Malaria: {mal}/1k, Kipindupindu: {cholera} visa. Tunapendekeza kuingilia kati haraka.",
         'alert_vaccine': "💉 **Chanjo katika {region}:** FIC iko {fic}%. Chini ya lengo. Tunapendekeza kampeni za kufikia maeneo ya vijijini.",
-        'summary': "📊 **Muhtasari wa {region}:** MMR ni {mmr}. Shinikizo la damu ni {htn}%. Umaskini ni {poverty}%.",
+        'summary': " **Muhtasari wa {region}:** MMR ni {mmr}. Shinikizo la damu ni {htn}%. Umaskini ni {poverty}%.",
         'fhir_title': "Mzigo wa GoTHoMIS FHIR",
     }
 }
@@ -199,7 +197,7 @@ if 'auth_step' not in st.session_state: st.session_state.auth_step = 'login'
 if 'lang' not in st.session_state: st.session_state.lang = 'en'
 
 L = T[st.session_state.lang]
-st.sidebar.title(f" {L['title']}")
+st.sidebar.title(f"🌍 {L['title']}")
 
 if st.session_state.user is None:
     if st.session_state.auth_step == 'login':
@@ -238,7 +236,7 @@ if st.session_state.user is None:
                 st.session_state.auth_step = 'login'; st.rerun()
             else: st.sidebar.error(L['invalid_code'])
 else:
-    st.sidebar.header(f" {L['welcome']}, {st.session_state.user['name']}!")
+    st.sidebar.header(f"👤 {L['welcome']}, {st.session_state.user['name']}!")
     st.sidebar.success(f"✅ {st.session_state.user['role']}")
     st.sidebar.info(f"🏢 {st.session_state.user.get('org', 'Tanzania MoH')}")
     st.sidebar.markdown("---")
@@ -276,18 +274,18 @@ else:
 
 role = st.sidebar.selectbox(L['role'], L['roles'])
 st.title(f"{L['title']}: {region}, {country}")
-st.info(f"🛡️ {policy_text}")
+st.info(f"️ {policy_text}")
 
 role_messages = {
     'en': {'Policymaker': "👔 Viewing as Policymaker: Focus on KPIs, funding gaps, and population-level trends.", 'Community Health Worker (CHW)': "📱 Viewing as CHW: Focus on actionable tasks, USSD alerts, and community-level data.", 'Student/Researcher': "🎓 Viewing as Researcher: Focus on raw data, correlations, and downloadable datasets.", 'NGO Partner': "🤝 Viewing as NGO: Focus on funding gaps, partnership opportunities, and impact metrics."},
-    'sw': {'Policymaker': "👔 Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.", 'Community Health Worker (CHW)': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.", 'Student/Researcher': "🎓 Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.", 'NGO Partner': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."}
+    'sw': {'Policymaker': " Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.", 'Community Health Worker (CHW)': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.", 'Student/Researcher': "🎓 Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.", 'NGO Partner': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."}
 }
 st.success(role_messages[st.session_state.lang][role])
 
 tab1, tab2, tab3, tab4 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4']])
 
 # ==============================================================================
-# TAB 1: EXECUTIVE DASHBOARD (WITH 20 DHIS2 INDICATORS)
+# TAB 1: EXECUTIVE DASHBOARD (FIXED SMUDGED TEXT)
 # ==============================================================================
 with tab1:
     st.header(L['surveillance'])
@@ -303,7 +301,7 @@ with tab1:
     st.markdown("---")
     st.subheader(L['dhis2_header'])
     
-        # Category 1: Communicable Diseases (3 per row)
+    # Category 1: Communicable Diseases (3 per row)
     with st.expander(L['cat_comm'], expanded=True):
         st.markdown("#### Communicable Diseases & Climate")
         row1 = st.columns(3)
@@ -347,6 +345,7 @@ with tab1:
         row1[0].metric(L['stockout'], f"{data['stockout']}%", help=f"Target: <{L['stock_target']}%")
         row1[1].metric(L['hw'], data['hw'], help=f"Target: >{L['hw_target']}")
         row1[2].metric(L['oop'], f"{data['oop']}%", help=f"Target: <{L['oop_target']}%")
+
     st.markdown("---")
     
     # Comprehensive Visualization: Target vs Actual
@@ -403,7 +402,7 @@ with tab2:
         
         m = folium.Map(location=[data['lat'], data['lon']], zoom_start=zoom_level, tiles="OpenStreetMap")
         
-        hosp_group = FeatureGroup(name=' Health Facilities')
+        hosp_group = FeatureGroup(name='🏥 Health Facilities')
         for i in range(5):
             folium.Marker(location=[data['lat'] + np.random.uniform(-0.1, 0.1), data['lon'] + np.random.uniform(-0.1, 0.1)], popup=f"<b>Health Facility {i+1}</b>", icon=folium.Icon(color='red', icon='plus', prefix='fa')).add_to(hosp_group)
         hosp_group.add_to(m)
@@ -427,20 +426,53 @@ with tab2:
         components.html(m._repr_html_(), height=600, scrolling=False)
 
 # ==============================================================================
-# TAB 3: AI, FHIR & USSD
+# TAB 3: AI, FHIR & USSD (VOICE ASSISTANT ADDED)
 # ==============================================================================
 with tab3:
     st.header(L['ai_header'])
     
-    if "messages" not in st.session_state: st.session_state.messages = []
+    # Voice Assistant Instructions
+    st.info("""
+    ### 🎙️ **Voice Assistant Mode**
+    **To Speak to the AI:** Click the microphone icon 🎙️ on your phone or laptop keyboard (usually next to the spacebar) while the chat box is active. It supports **English** and **Kiswahili**!
+    """)
+
+    # Initialize chat history
+    if "messages" not in st.session_state: 
+        st.session_state.messages = []
+        
+    # Display chat messages
     for message in st.session_state.messages:
-        with st.chat_message(message["role"]): st.markdown(message["content"])
-            
+        with st.chat_message(message["role"]): 
+            st.markdown(message["content"])
+            # Add "Read Aloud" button for AI messages
+            if message["role"] == "assistant":
+                # Create a safe string for JavaScript
+                safe_text = message["content"].replace("'", "\\'").replace('\n', ' ').replace('"', '')
+                st.markdown(f"""
+                <button onclick="speakText('{safe_text}')" style="background-color: #0066cc; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-top: 5px;">
+                    🔊 Read Aloud
+                </button>
+                <script>
+                function speakText(text) {{
+                    window.speechSynthesis.cancel(); // Stop any current speech
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
+                    utterance.rate = 1.0;
+                    window.speechSynthesis.speak(utterance);
+                }}
+                </script>
+                """, unsafe_allow_html=True)
+                
+    # Chat input
     prompt = st.chat_input(L['chat_placeholder'].format(region=region))
+    
     if prompt:
         st.session_state.messages.append({"role": "user", "content": prompt})
-        with st.chat_message("user"): st.markdown(prompt)
+        with st.chat_message("user"): 
+            st.markdown(prompt)
         
+        # AI Logic
         if "malaria" in prompt.lower() or "cholera" in prompt.lower():
             response = L['alert_malaria'].format(region=region, mal=data['mal'], cholera=data['cholera'])
         elif "vaccine" in prompt.lower() or "fic" in prompt.lower():
@@ -451,10 +483,30 @@ with tab3:
         fhir_payload = {"resourceType": "Bundle", "type": "transaction", "entry": [{"resource": {"resourceType": "CarePlan", "status": "active", "intent": "plan", "title": f"Intervention for {region}", "subject": {"reference": f"Location/TZ-{region}"}}}]}
         full_response = f"{response}\n\n**{L['fhir_title']}:**\n```json\n{json.dumps(fhir_payload, indent=2)}\n```"
         
-        with st.chat_message("assistant"): st.markdown(full_response)
+        with st.chat_message("assistant"): 
+            st.markdown(full_response)
+            # Add Read Aloud button for the new message
+            safe_text = full_response.replace("'", "\\'").replace('\n', ' ').replace('"', '')
+            st.markdown(f"""
+            <button onclick="speakText('{safe_text}')" style="background-color: #0066cc; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-top: 5px;">
+                🔊 Read Aloud
+            </button>
+            <script>
+            function speakText(text) {{
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
+                utterance.rate = 1.0;
+                window.speechSynthesis.speak(utterance);
+            }}
+            </script>
+            """, unsafe_allow_html=True)
+            
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     st.markdown("---")
+    
+    # USSD DEMO SECTION
     st.subheader(L['ussd_header'])
     st.caption(L['ussd_subheader'])
     
