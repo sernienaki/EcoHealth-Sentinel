@@ -112,7 +112,7 @@ T = {
         'hw': "Msongamano wa Watumishi wa Afya", 'hw_target': 0.45,
         'oop': "Gharama ya Mfukoni (%)", 'oop_target': 15,
         'poverty': "Kiwango cha Umaskini", 'schools': "Shule", 'markets': "Masoko",
-        'social': 'Viashiria vya Kijamii na Kiuchumi", 
+        'social': "Viashiria vya Kijamii na Kiuchumi", 
         'map_guide': "Jinsi ya Kusoma Ramani",
         'map_guide_text': "**Vipini Vyekundu:** Vituo vya Afya\n**Vidudu vya Bluu:** Vyanzo vya Maji\n**Mraba wa Kijani:** Shule\n**Pembetatu ya Chungwa:** Masoko\n*Badilisha tabaka kwa kutumia ikoni juu kulia.*",
         'interactive_map': "Ramani ya Huduma",
