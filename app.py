@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import folium
 from folium import FeatureGroup
-from streamlit_folium import st_folium
+import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import json
 from datetime import datetime
@@ -47,19 +47,20 @@ T = {
         'interactive_map': "Interactive Service Map",
         'ai_header': "AI Agent & Interoperability",
         'chat_placeholder': "Ask about health risks in {region}",
-        'ussd_header': "📱 AfyaConnect USSD Gateway",
-        'ussd_subheader': "Powered by Africa's Talking API",
-        'ussd_desc': "Simulated USSD session flow for Community Health Workers via AfyaConnect",
-        'ussd_start': "Start AfyaConnect Session Demo",
-        'ussd_session': "AfyaConnect Session Flow",
-        'ussd_payload': "AfyaConnect API Payload",
+        'ussd_header': "📱 EcoHealth USSD Services",
+        'ussd_subheader': "Access on any mobile phone (No smartphone required)",
+        'ussd_start': "View USSD Menu Flow",
+        'ussd_session': "USSD Session Flow",
+        'network_codes': "Network Subscription Shortcodes (Tanzania)",
+        'network_desc': "Dial the code below on your respective network to access EcoHealth USSD services:",
+        'how_it_works': "**How it works:**\n1. Dial the shortcode for your network.\n2. Navigate the menu using numbers (1, 2, 3...).\n3. Reports are sent directly to the District Medical Officer.\n4. Standard USSD rates apply (approx. 50 TZS per session).",
         'brief_header': "Policy Brief Generator",
         'download': "📥 Download Brief",
         'preview': "Preview",
         'roles': ["Policymaker", "Community Health Worker (CHW)", "Student/Researcher", "NGO Partner"],
         'languages': ["English", "Kiswahili"],
         'themes': ["Light Mode", "Dark Mode"],
-        'green_ai': "♻️ Green AI Impact",
+        'green_ai': "️ Green AI Impact",
         'co2_saved': "CO2 Saved",
         'co2_delta': "-99% vs LLMs",
         'premium': "🌟 Premium Subscription",
@@ -72,7 +73,7 @@ T = {
         'login_btn': "Log In",
         'new_user': "New to EcoHealth Sentinel?",
         'create_account': "Create Account",
-        'signup_header': " Create Account",
+        'signup_header': "📝 Create Account",
         'full_name': "Full Name",
         'organization': "Organization",
         'create_pass': "Create Password",
@@ -88,7 +89,7 @@ T = {
         'orgs': ["Ministry of Health", "NGO", "Research Institute", "Community Health Worker", "Other"],
         'alert_malaria': "🚨 **Alert for {region}:** High risk detected. Malaria: {mal}/1k, Cholera: {cholera} cases. Recommend immediate WASH intervention and LLIN distribution.",
         'alert_vaccine': "💉 **Immunization in {region}:** FIC is at {fic}%. Below target. Recommend mop-up campaigns in rural wards.",
-        'summary': " **Summary for {region}:** MMR is {mmr}. Hypertension is {htn}%. Poverty index is {poverty}%.",
+        'summary': "📊 **Summary for {region}:** MMR is {mmr}. Hypertension is {htn}%. Poverty index is {poverty}%.",
         'fhir_title': "GoTHoMIS FHIR Payload",
     },
     'sw': {
@@ -101,7 +102,7 @@ T = {
         'role': "Jukumu Lako / Your Role",
         'lang': "Lugha / Language",
         'theme': "Mandhari / Theme",
-        'tab1': "📊 Dashibodi Kuu",
+        'tab1': " Dashibodi Kuu",
         'tab2': "🌍 Jamii na Huduma",
         'tab3': "🤖 AI, FHIR na USSD",
         'tab4': "📄 Hati ya Sera",
@@ -126,22 +127,23 @@ T = {
         'interactive_map': "Ramani ya Huduma",
         'ai_header': "Wakala wa AI na Uunganishaji",
         'chat_placeholder': "Uliza kuhusu hatari za afya katika {region}",
-        'ussd_header': "📱 Lango la USSD la AfyaConnect",
-        'ussd_subheader': "Inaendeshwa na Africa's Talking API",
-        'ussd_desc': "Mtiririko wa USSD kwa Wahudumu wa Afya wa Jamii kupitia AfyaConnect",
-        'ussd_start': "Anza Maonyesho ya AfyaConnect",
-        'ussd_session': "Mtiririko wa AfyaConnect",
-        'ussd_payload': "Mzigo wa API ya AfyaConnect",
+        'ussd_header': "📱 Huduma za USSD za EcoHealth",
+        'ussd_subheader': "Tumia simu yoyote (Haitajani smartphone)",
+        'ussd_start': "Tazama Mtiririko wa Menyu ya USSD",
+        'ussd_session': "Mtiririko wa USSD",
+        'network_codes': "Namba za Ufupishi za Mitandao (Tanzania)",
+        'network_desc': "Piga namba hizi kwenye mtandao wako kufikia huduma za USSD za EcoHealth:",
+        'how_it_works': "**Jinsi inavyofanya kazi:**\n1. Piga namba ya ufupishi ya mtandao wako.\n2. Tumia namba (1, 2, 3...) kusogeza menyu.\n3. Ripoti zinatumwa moja kwa moja kwa Mganga Mkuu wa Wilaya.\n4. Gharama za kawaida za USSD zinatumika (takriban 50 TZS).",
         'brief_header': "Kizalishaji cha Hati ya Sera",
         'download': "📥 Pakua Hati",
         'preview': "Hakiki",
         'roles': ["Mtunga Sera", "Mhudumu wa Afya wa Jamii (CHW)", "Mwanafunzi/Mtafiti", "Mshirika wa NGO"],
         'languages': ["English", "Kiswahili"],
         'themes': ["Hali ya Mwanga", "Hali ya Giza"],
-        'green_ai': "️ Athari ya AI ya Kijani",
+        'green_ai': "♻️ Athari ya AI ya Kijani",
         'co2_saved': "CO2 Iliyookolewa",
         'co2_delta': "-99% ikilinganishwa na LLM",
-        'premium': "🌟 Uanachama wa Premium",
+        'premium': " Uanachama wa Premium",
         'premium_desc': "Fungua AI ya Hali ya Juu, Usafirishaji wa DHIS2, na Hali ya Nje ya Mtandao.",
         'subscribe': "💳 Jiandikishe kwa $1/mwezi",
         'logout': "🚪 Toka",
@@ -151,7 +153,7 @@ T = {
         'login_btn': "Ingia",
         'new_user': "Mgeni kwenye EcoHealth Sentinel?",
         'create_account': "Fungua Akaunti",
-        'signup_header': " Fungua Akaunti",
+        'signup_header': "📝 Fungua Akaunti",
         'full_name': "Jina Kamili",
         'organization': "Mashirika",
         'create_pass': "Unda Nenosiri",
@@ -242,19 +244,16 @@ EAC_NATIONAL = {
 }
 
 # ==============================================================================
-# 4. USSD DEMO ENGINE (AFYACONNECT BRANDING)
+# 4. USSD DEMO ENGINE
 # ==============================================================================
 def simulate_ussd(region, data, lang):
-    ussd_menu = {'session_id': f"AC_{datetime.now().strftime('%Y%m%d%H%M%S')}", 'service_code': "*384*27#", 'phone_number': "+255712345678"}
     screens = [
-        {'step': 1, 'title': "AfyaConnect - Home", 'display': "AfyaConnect USSD\n1. Report Disease Case\n2. Check Medicine Stock\n3. View Regional Alerts\n0. Exit", 'api_text': ""},
-        {'step': 2, 'title': "AfyaConnect - Report Case", 'display': "Report Disease Case:\n1. Malaria\n2. Cholera\n3. Maternal Emergency\n4. NCD\n9. Back", 'api_text': "1"},
-        {'step': 3, 'title': "AfyaConnect - Malaria Report", 'display': f"Malaria Report - {region}\nEnter number of cases:\n[Input Field]\n0. Cancel", 'api_text': "1"},
-        {'step': 4, 'title': "AfyaConnect - Confirmation", 'display': f"✅ Report Submitted!\nRegion: {region}\nCases: 5\nAlert sent to District MO.\nReference: AFYA-{datetime.now().strftime('%Y%m%d')}\n0. Exit", 'api_text': "5"}
+        {'step': 1, 'title': "EcoHealth USSD - Home", 'display': "EcoHealth Sentinel\n1. Report Disease Case\n2. Check Medicine Stock\n3. View Regional Alerts\n0. Exit", 'api_text': ""},
+        {'step': 2, 'title': "EcoHealth USSD - Report Case", 'display': "Report Disease Case:\n1. Malaria\n2. Cholera\n3. Maternal Emergency\n4. NCD\n9. Back", 'api_text': "1"},
+        {'step': 3, 'title': "EcoHealth USSD - Malaria Report", 'display': f"Malaria Report - {region}\nEnter number of cases:\n[Input Field]\n0. Cancel", 'api_text': "1"},
+        {'step': 4, 'title': "EcoHealth USSD - Confirmation", 'display': f"✅ Report Submitted!\nRegion: {region}\nCases: 5\nAlert sent to District MO.\nReference: ECO-{datetime.now().strftime('%Y%m%d')}\n0. Exit", 'api_text': "5"}
     ]
-    api_payload = {"sessionId": ussd_menu['session_id'], "serviceCode": ussd_menu['service_code'], "phoneNumber": ussd_menu['phone_number'], "text": "1\n1\n5"}
-    at_response = {"status": "success", "message": "AfyaConnect session processed", "responses": [{"CON AfyaConnect USSD\n1. Report Case\n2. Check Stock\n3. Alerts\n0. Exit"}, {"CON Report Case:\n1. Malaria\n2. Cholera\n9. Back"}, {"CON Enter cases for Malaria:"}, {"END ✅ Report submitted! Ref: AFYA-2026. Alert sent to MO."}]}
-    return screens, api_payload, at_response
+    return screens
 
 # ==============================================================================
 # 5. AUTHENTICATION SYSTEM
@@ -264,7 +263,7 @@ if 'auth_step' not in st.session_state: st.session_state.auth_step = 'login'
 if 'lang' not in st.session_state: st.session_state.lang = 'en'
 
 L = T[st.session_state.lang]
-st.sidebar.title(f"🌍 {L['title']}")
+st.sidebar.title(f" {L['title']}")
 
 if st.session_state.user is None:
     if st.session_state.auth_step == 'login':
@@ -308,7 +307,7 @@ if st.session_state.user is None:
 else:
     st.sidebar.header(f"👤 {L['welcome']}, {st.session_state.user['name']}!")
     st.sidebar.success(f"✅ {st.session_state.user['role']}")
-    st.sidebar.info(f"🏢 {st.session_state.user.get('org', 'Tanzania MoH')}")
+    st.sidebar.info(f" {st.session_state.user.get('org', 'Tanzania MoH')}")
     st.sidebar.markdown("---")
     st.sidebar.subheader(L['premium'])
     st.sidebar.write(L['premium_desc'])
@@ -364,7 +363,7 @@ role_messages = {
     },
     'sw': {
         'Policymaker': "👔 Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.",
-        'Community Health Worker (CHW)': " Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.",
+        'Community Health Worker (CHW)': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.",
         'Student/Researcher': "🎓 Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.",
         'NGO Partner': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."
     }
@@ -412,7 +411,7 @@ with tab1:
         st.plotly_chart(fig_b, use_container_width=True)
 
 # ==============================================================================
-# TAB 2: SOCIO-ECOLOGICAL & SERVICES MAP (FIXED RENDERING)
+# TAB 2: SOCIO-ECOLOGICAL & SERVICES MAP (GLITCH-FIXED)
 # ==============================================================================
 with tab2:
     st.header("🌍 Socio-Ecological Determinants & Social Services")
@@ -432,7 +431,7 @@ with tab2:
         st.subheader(f"{L['interactive_map']}: {region}")
         zoom_level = 9 if country == "Tanzania" else 6
         
-        # Build map directly (No caching to ensure proper iframe rendering)
+        # Build map
         m = folium.Map(location=[data['lat'], data['lon']], zoom_start=zoom_level, tiles="OpenStreetMap")
         
         hosp_group = FeatureGroup(name='🏥 Health Facilities')
@@ -457,11 +456,11 @@ with tab2:
         
         folium.LayerControl(collapsed=False).add_to(m)
         
-        # Use dynamic key based on region to prevent state conflicts and ensure rendering
-        st_folium(m, width=800, height=600, key=f"map_{region}")
+        # GLITCH FIX: Use components.html instead of st_folium for 100% stability
+        components.html(m._repr_html_(), height=600, scrolling=False)
 
 # ==============================================================================
-# TAB 3: AI, FHIR & USSD (AFYACONNECT BRANDING)
+# TAB 3: AI, FHIR & USSD (NETWORK SHORTCODES)
 # ==============================================================================
 with tab3:
     st.header(L['ai_header'])
@@ -490,12 +489,12 @@ with tab3:
 
     st.markdown("---")
     
-    # AFYACONNECT USSD DEMO
+    # USSD DEMO SECTION
     st.subheader(L['ussd_header'])
-    st.caption(L['ussd_subheader'] + " | " + L['ussd_desc'])
+    st.caption(L['ussd_subheader'])
     
     if st.button(f"📱 {L['ussd_start']}", use_container_width=True):
-        screens, api_payload, at_response = simulate_ussd(region, data, st.session_state.lang)
+        screens = simulate_ussd(region, data, st.session_state.lang)
         st.markdown("### " + L['ussd_session'])
         cols = st.columns(4)
         for i, screen in enumerate(screens):
@@ -506,25 +505,18 @@ with tab3:
                     st.markdown(f"*User input: `{screen['api_text']}`*")
         
         st.markdown("---")
-        col_api1, col_api2 = st.columns(2)
-        with col_api1:
-            st.markdown("### 📤 " + L['ussd_payload'] + " (Request)")
-            st.code(json.dumps(api_payload, indent=2), language='json')
-            st.caption("POST to: https://api.africastalking.com/version1/ussd")
-        with col_api2:
-            st.markdown("### 📥 AfyaConnect Response (via Africa's Talking)")
-            st.code(json.dumps(at_response, indent=2), language='json')
-            st.caption("CON = Continue session, END = Terminate session")
+        st.subheader(L['network_codes'])
+        st.write(L['network_desc'])
+        
+        # Network Shortcodes for Tanzania
+        col_vod, col_tigo, col_air, col_ttcl = st.columns(4)
+        col_vod.metric("Vodacom", "*149*27#")
+        col_tigo.metric("Tigo (Yas)", "*150*00*27#")
+        col_air.metric("Airtel", "*150*27#")
+        col_ttcl.metric("TTCL / Halotel", "*149*27#")
         
         st.markdown("---")
-        st.info("""
-        ** AfyaConnect Integration Architecture:**
-        1. CHW dials `*384*27#` on any mobile phone (no smartphone required)
-        2. Request routed through **Africa's Talking USSD Gateway** to AfyaConnect Backend
-        3. Webhook processes request, updates DHIS2, generates FHIR payload
-        4. Response sent back via Africa's Talking to CHW's phone
-        5. **Cost:** ~$0.01 per session (billed to MoH account)
-        """)
+        st.info(L['how_it_works'])
 
 # ==============================================================================
 # TAB 4: POLICY BRIEF
