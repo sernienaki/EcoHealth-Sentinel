@@ -7,7 +7,6 @@ from streamlit_folium import st_folium
 import plotly.graph_objects as go
 import json
 from datetime import datetime
-import requests
 
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
@@ -23,10 +22,10 @@ T = {
         'role': "Your Role / Jukumu Lako",
         'lang': "Language / Lugha",
         'theme': "Theme / Mandhari",
-        'tab1': " Executive Dashboard",
-        'tab2': " Socio-Ecological & Services",
+        'tab1': "📊 Executive Dashboard",
+        'tab2': "🌍 Socio-Ecological & Services",
         'tab3': "🤖 AI, FHIR & USSD",
-        'tab4': " Policy Brief",
+        'tab4': "📄 Policy Brief",
         'policy': "Policy: HSSP V, Vision 2050 & PDPA 2022 | ITU ML Pipeline Compliant",
         'surveillance': "Comprehensive Public Health Surveillance",
         'malaria': "Malaria (per 1k)",
@@ -46,10 +45,6 @@ T = {
         'map_guide': "How to Read This Map",
         'map_guide_text': "**Red Pins:** Health Facilities\n**Blue Circles:** WASH Points\n**Green Squares:** Schools\n**Orange Triangles:** Markets\n*Toggle layers using the icon on the top right.*",
         'interactive_map': "Interactive Service Map",
-        'health_fac': "🏥 Health Facilities",
-        'wash': "💧 WASH Points",
-        'school': "🏫 Schools",
-        'market': "🛒 Markets",
         'ai_header': "AI Agent & Interoperability",
         'chat_input': "Ask about health risks",
         'ussd_header': "Africa's Talking USSD Integration Demo",
@@ -63,12 +58,12 @@ T = {
         'roles': ["Policymaker", "Community Health Worker (CHW)", "Student/Researcher", "NGO Partner"],
         'languages': ["English", "Kiswahili"],
         'themes': ["Light Mode", "Dark Mode"],
-        'green_ai': "️ Green AI Impact",
+        'green_ai': "♻️ Green AI Impact",
         'co2_saved': "CO2 Saved",
         'co2_delta': "-99% vs LLMs",
-        'premium': " Premium Subscription",
+        'premium': "🌟 Premium Subscription",
         'premium_desc': "Unlock Advanced AI, Bulk DHIS2 Exports, and Offline CHW Mode.",
-        'subscribe': " Subscribe for $1/month",
+        'subscribe': "💳 Subscribe for $1/month",
         'logout': "🚪 Log Out",
         'login': "👤 Sign In",
         'email': "Email Address",
@@ -83,7 +78,7 @@ T = {
         'confirm_pass': "Confirm Password",
         'signup_btn': "Sign Up & Send Verification",
         'back_login': "Back to Login",
-        'verify_header': " Verify Email",
+        'verify_header': "📧 Verify Email",
         'code_sent': "Code sent to",
         'enter_code': "Enter 6-digit code",
         'verify_btn': "Verify Account",
@@ -110,7 +105,7 @@ T = {
         'tab1': "📊 Dashibodi Kuu",
         'tab2': "🌍 Jamii na Huduma",
         'tab3': "🤖 AI, FHIR na USSD",
-        'tab4': " Hati ya Sera",
+        'tab4': "📄 Hati ya Sera",
         'policy': "Sera: HSSP V, Vision 2050 na PDPA 2022 | ITU ML Pipeline",
         'surveillance': "Ufuatiliaji wa Afya ya Umma",
         'malaria': "Malaria (kwa 1k)",
@@ -130,10 +125,6 @@ T = {
         'map_guide': "Jinsi ya Kusoma Ramani",
         'map_guide_text': "**Vipini Vyekundu:** Vituo vya Afya\n**Vidudu vya Bluu:** Vyanzo vya Maji\n**Mraba wa Kijani:** Shule\n**Pembetatu ya Chungwa:** Masoko\n*Badilisha tabaka kwa kutumia ikoni juu kulia.*",
         'interactive_map': "Ramani ya Huduma",
-        'health_fac': "🏥 Vituo vya Afya",
-        'wash': " Vyanzo vya Maji",
-        'school': "🏫 Shule",
-        'market': "🛒 Masoko",
         'ai_header': "Wakala wa AI na Uunganishaji",
         'chat_input': "Uliza kuhusu hatari za afya",
         'ussd_header': "Maonyesho ya USSD ya Africa's Talking",
@@ -188,7 +179,6 @@ T = {
 # ==============================================================================
 st.set_page_config(page_title="EcoHealth Sentinel: Tanzania & EAC", layout="wide", initial_sidebar_state="expanded")
 
-# Initialize theme in session state
 if 'theme' not in st.session_state:
     st.session_state.theme = 'Light Mode'
 
@@ -230,7 +220,7 @@ def get_theme_css(theme):
 st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
 
 # ==============================================================================
-# 3. DATA STRUCTURES
+# 3. DATA STRUCTURES (NO EMOJIS IN KEYS TO PREVENT KEYERROR)
 # ==============================================================================
 TANZANIA_REGIONS = {
     "Dar es Salaam": {"lat": -6.7924, "lon": 39.2083, "mal": 15, "cholera": 450, "mmr": 85, "fic": 82, "oop": 32, "htn": 31.2, "poverty": 12, "schools": 450, "markets": 120},
@@ -248,59 +238,38 @@ TANZANIA_REGIONS = {
 }
 
 EAC_NATIONAL = {
-    "Kenya 🇰🇪": {"lat": -0.0236, "lon": 37.9062, "mal": 45, "cholera": 90, "mmr": 342, "fic": 80, "oop": 25, "htn": 27.0, "poverty": 22, "schools": 12000, "markets": 3500},
-    "Uganda 🇺": {"lat": 1.3733, "lon": 32.2903, "mal": 120, "cholera": 110, "mmr": 336, "fic": 76, "oop": 32, "htn": 26.0, "poverty": 31, "schools": 9500, "markets": 2800},
-    "Rwanda 🇷🇼": {"lat": -1.9403, "lon": 29.8739, "mal": 35, "cholera": 20, "mmr": 248, "fic": 92, "oop": 12, "htn": 21.0, "poverty": 16, "schools": 4200, "markets": 1100},
-    "Burundi 🇧🇮": {"lat": -3.3731, "lon": 29.9189, "mal": 250, "cholera": 180, "mmr": 548, "fic": 71, "oop": 18, "htn": 18.0, "poverty": 45, "schools": 3800, "markets": 950},
-    "South Sudan 🇸🇸": {"lat": 6.8770, "lon": 31.3070, "mal": 310, "cholera": 220, "mmr": 1150, "fic": 55, "oop": 45, "htn": 16.0, "poverty": 62, "schools": 2100, "markets": 600}
+    "Kenya": {"lat": -0.0236, "lon": 37.9062, "mal": 45, "cholera": 90, "mmr": 342, "fic": 80, "oop": 25, "htn": 27.0, "poverty": 22, "schools": 12000, "markets": 3500},
+    "Uganda": {"lat": 1.3733, "lon": 32.2903, "mal": 120, "cholera": 110, "mmr": 336, "fic": 76, "oop": 32, "htn": 26.0, "poverty": 31, "schools": 9500, "markets": 2800},
+    "Rwanda": {"lat": -1.9403, "lon": 29.8739, "mal": 35, "cholera": 20, "mmr": 248, "fic": 92, "oop": 12, "htn": 21.0, "poverty": 16, "schools": 4200, "markets": 1100},
+    "Burundi": {"lat": -3.3731, "lon": 29.9189, "mal": 250, "cholera": 180, "mmr": 548, "fic": 71, "oop": 18, "htn": 18.0, "poverty": 45, "schools": 3800, "markets": 950},
+    "South Sudan": {"lat": 6.8770, "lon": 31.3070, "mal": 310, "cholera": 220, "mmr": 1150, "fic": 55, "oop": 45, "htn": 16.0, "poverty": 62, "schools": 2100, "markets": 600}
 }
 
 # ==============================================================================
 # 4. CACHED MAP BUILDER (Fixes Blinking Issue)
 # ==============================================================================
 @st.cache_resource
-def build_map(lat, lon, zoom, country_is_tz):
-    """Build the Folium map once and cache it to prevent blinking."""
+def build_map(lat, lon, zoom):
     m = folium.Map(location=[lat, lon], zoom_start=zoom, tiles="OpenStreetMap")
     
-    # Health Facilities
     hosp_group = FeatureGroup(name='🏥 Health Facilities')
     for i in range(5):
-        folium.Marker(
-            location=[lat + np.random.uniform(-0.1, 0.1), lon + np.random.uniform(-0.1, 0.1)],
-            popup=f"<b>Health Facility {i+1}</b><br>Type: Dispensary",
-            icon=folium.Icon(color='red', icon='plus', prefix='fa')
-        ).add_to(hosp_group)
+        folium.Marker(location=[lat + np.random.uniform(-0.1, 0.1), lon + np.random.uniform(-0.1, 0.1)], popup=f"<b>Health Facility {i+1}</b>", icon=folium.Icon(color='red', icon='plus', prefix='fa')).add_to(hosp_group)
     hosp_group.add_to(m)
     
-    # WASH Points
     wash_group = FeatureGroup(name='💧 WASH Points')
     for i in range(8):
-        folium.CircleMarker(
-            location=[lat + np.random.uniform(-0.15, 0.15), lon + np.random.uniform(-0.15, 0.15)],
-            radius=8, color='blue', fill=True, fill_opacity=0.7,
-            popup=f"<b>Water Point {i+1}</b><br>Type: Community Well"
-        ).add_to(wash_group)
+        folium.CircleMarker(location=[lat + np.random.uniform(-0.15, 0.15), lon + np.random.uniform(-0.15, 0.15)], radius=8, color='blue', fill=True, fill_opacity=0.7, popup=f"<b>Water Point {i+1}</b>").add_to(wash_group)
     wash_group.add_to(m)
     
-    # Schools
     school_group = FeatureGroup(name='🏫 Schools')
     for i in range(6):
-        folium.RegularPolygonMarker(
-            location=[lat + np.random.uniform(-0.12, 0.12), lon + np.random.uniform(-0.12, 0.12)],
-            number_of_sides=4, radius=10, color='green', fill=True, fill_opacity=0.7,
-            popup=f"<b>School {i+1}</b><br>Type: Primary School"
-        ).add_to(school_group)
+        folium.RegularPolygonMarker(location=[lat + np.random.uniform(-0.12, 0.12), lon + np.random.uniform(-0.12, 0.12)], number_of_sides=4, radius=10, color='green', fill=True, fill_opacity=0.7, popup=f"<b>School {i+1}</b>").add_to(school_group)
     school_group.add_to(m)
     
-    # Markets
     market_group = FeatureGroup(name='🛒 Markets')
     for i in range(4):
-        folium.RegularPolygonMarker(
-            location=[lat + np.random.uniform(-0.08, 0.08), lon + np.random.uniform(-0.08, 0.08)],
-            number_of_sides=3, radius=10, color='orange', fill=True, fill_opacity=0.7,
-            popup=f"<b>Market {i+1}</b><br>Type: Local Trade Center"
-        ).add_to(market_group)
+        folium.RegularPolygonMarker(location=[lat + np.random.uniform(-0.08, 0.08), lon + np.random.uniform(-0.08, 0.08)], number_of_sides=3, radius=10, color='orange', fill=True, fill_opacity=0.7, popup=f"<b>Market {i+1}</b>").add_to(market_group)
     market_group.add_to(m)
     
     folium.LayerControl(collapsed=False).add_to(m)
@@ -310,82 +279,15 @@ def build_map(lat, lon, zoom, country_is_tz):
 # 5. AFRICA'S TALKING USSD DEMO ENGINE
 # ==============================================================================
 def simulate_africas_talking_ussd(region, data, lang):
-    """Simulate a complete Africa's Talking USSD session for CHWs."""
-    
-    # Step 1: USSD Menu Structure
-    ussd_menu = {
-        'session_id': f"ATSim_{datetime.now().strftime('%Y%m%d%H%M%S')}",
-        'service_code': "*384*27#",
-        'phone_number': "+255712345678",
-        'text': ""
-    }
-    
-    # Step 2: Simulated CHW Journey (4 screens)
+    ussd_menu = {'session_id': f"ATSim_{datetime.now().strftime('%Y%m%d%H%M%S')}", 'service_code': "*384*27#", 'phone_number': "+255712345678"}
     screens = [
-        {
-            'step': 1,
-            'title': "USSD Menu - Home",
-            'display': """EcoHealth Sentinel
-1. Report Disease Case
-2. Check Medicine Stock
-3. View Regional Alerts
-4. Request Support
-0. Exit""",
-            'api_text': ""
-        },
-        {
-            'step': 2,
-            'title': "USSD Menu - Report Case (Option 1)",
-            'display': """Report Disease Case:
-1. Malaria
-2. Cholera
-3. Maternal Emergency
-4. NCD (Hypertension/Diabetes)
-9. Back""",
-            'api_text': "1"
-        },
-        {
-            'step': 3,
-            'title': "USSD Menu - Malaria Report",
-            'display': f"""Malaria Report - {region}
-Enter number of cases:
-[Input Field]
-0. Cancel""",
-            'api_text': "1"
-        },
-        {
-            'step': 4,
-            'title': "USSD - Confirmation",
-            'display': f"""✅ Report Submitted!
-Region: {region}
-Cases: 5
-Alert sent to District MO.
-Reference: ECO-{datetime.now().strftime('%Y%m%d')}
-0. Exit""",
-            'api_text': "5"
-        }
+        {'step': 1, 'title': "USSD Menu - Home", 'display': "EcoHealth Sentinel\n1. Report Disease Case\n2. Check Medicine Stock\n3. View Regional Alerts\n0. Exit", 'api_text': ""},
+        {'step': 2, 'title': "USSD Menu - Report Case", 'display': "Report Disease Case:\n1. Malaria\n2. Cholera\n3. Maternal Emergency\n4. NCD\n9. Back", 'api_text': "1"},
+        {'step': 3, 'title': "USSD Menu - Malaria Report", 'display': f"Malaria Report - {region}\nEnter number of cases:\n[Input Field]\n0. Cancel", 'api_text': "1"},
+        {'step': 4, 'title': "USSD - Confirmation", 'display': f"✅ Report Submitted!\nRegion: {region}\nCases: 5\nAlert sent to District MO.\nReference: ECO-{datetime.now().strftime('%Y%m%d')}\n0. Exit", 'api_text': "5"}
     ]
-    
-    # Step 3: Africa's Talking API Payload (Real format)
-    api_payload = {
-        "sessionId": ussd_menu['session_id'],
-        "serviceCode": ussd_menu['service_code'],
-        "phoneNumber": ussd_menu['phone_number'],
-        "text": "1\n1\n5"  # Simulated user inputs
-    }
-    
-    # Step 4: Africa's Talking Response Format
-    at_response = {
-        "status": "success",
-        "message": "USSD session processed",
-        "responses": [
-            {"CON EcoHealth Sentinel\n1. Report Case\n2. Check Stock\n3. Alerts\n0. Exit"},
-            {"CON Report Case:\n1. Malaria\n2. Cholera\n9. Back"},
-            {"CON Enter cases for Malaria:"},
-            {"END ✅ Report submitted! Ref: ECO-2026. Alert sent to MO."}
-        ]
-    }
-    
+    api_payload = {"sessionId": ussd_menu['session_id'], "serviceCode": ussd_menu['service_code'], "phoneNumber": ussd_menu['phone_number'], "text": "1\n1\n5"}
+    at_response = {"status": "success", "message": "USSD session processed", "responses": [{"CON EcoHealth Sentinel\n1. Report Case\n2. Check Stock\n3. Alerts\n0. Exit"}, {"CON Report Case:\n1. Malaria\n2. Cholera\n9. Back"}, {"CON Enter cases for Malaria:"}, {"END ✅ Report submitted! Ref: ECO-2026. Alert sent to MO."}]}
     return screens, api_payload, at_response
 
 # ==============================================================================
@@ -395,9 +297,7 @@ if 'user' not in st.session_state: st.session_state.user = None
 if 'auth_step' not in st.session_state: st.session_state.auth_step = 'login'
 if 'lang' not in st.session_state: st.session_state.lang = 'en'
 
-# Get current language translations
 L = T[st.session_state.lang]
-
 st.sidebar.title(f"🌍 {L['title']}")
 
 if st.session_state.user is None:
@@ -444,19 +344,14 @@ else:
     st.sidebar.success(f"✅ {st.session_state.user['role']}")
     st.sidebar.info(f"🏢 {st.session_state.user.get('org', 'Tanzania MoH')}")
     st.sidebar.markdown("---")
-    
-    # Premium Subscription
     st.sidebar.subheader(L['premium'])
     st.sidebar.write(L['premium_desc'])
     st.sidebar.link_button(L['subscribe'], "https://buymeacoffee.com/ecohealth", use_container_width=True)
     st.sidebar.markdown("---")
-    
-    # Green AI Section
     st.sidebar.subheader(L['green_ai'])
     st.sidebar.metric(L['co2_saved'], "0.045 kg/prediction", delta=L['co2_delta'])
     st.sidebar.caption("Lightweight heuristic models used instead of energy-intensive LLMs. Compliant with Sustainable AI principles (Ueda et al., 2024).")
     st.sidebar.markdown("---")
-    
     if st.sidebar.button(L['logout'], use_container_width=True): 
         st.session_state.user = None; st.session_state.auth_step = 'login'; st.rerun()
 
@@ -465,7 +360,6 @@ else:
 # ==============================================================================
 st.sidebar.header(L['settings'])
 
-# Language Toggle
 lang_choice = st.sidebar.radio(L['lang'], L['languages'])
 if lang_choice == "Kiswahili":
     st.session_state.lang = 'sw'
@@ -474,16 +368,15 @@ else:
     st.session_state.lang = 'en'
     L = T['en']
 
-# Theme Toggle
 theme_choice = st.sidebar.radio(L['theme'], L['themes'])
 if theme_choice != st.session_state.theme:
     st.session_state.theme = theme_choice
     st.rerun()
 
-# Country & Region
-country = st.sidebar.selectbox(L['country'], ["Tanzania 🇹🇿", "Kenya 🇰🇪", "Uganda 🇺🇬", "Rwanda 🇼", "Burundi 🇧🇮", "South Sudan 🇸"])
+# Country & Region (Exact string matching to prevent KeyError)
+country = st.sidebar.selectbox(L['country'], ["Tanzania", "Kenya", "Uganda", "Rwanda", "Burundi", "South Sudan"])
 
-if country == "Tanzania 🇿":
+if country == "Tanzania":
     region = st.sidebar.selectbox(L['region'], list(TANZANIA_REGIONS.keys()))
     data = TANZANIA_REGIONS[region]
     policy_text = L['policy']
@@ -492,22 +385,20 @@ else:
     data = EAC_NATIONAL[country]
     policy_text = "National Health Strategy & EAC Protocol"
 
-# ROLE SELECTOR (The missing feature!)
 role = st.sidebar.selectbox(L['role'], L['roles'])
 
 st.title(f"{L['title']}: {region}, {country}")
 st.info(f"🛡️ {policy_text}")
 
-# Role-specific welcome message
 role_messages = {
     'en': {
         'Policymaker': "👔 Viewing as Policymaker: Focus on KPIs, funding gaps, and population-level trends.",
         'Community Health Worker (CHW)': " Viewing as CHW: Focus on actionable tasks, USSD alerts, and community-level data.",
-        'Student/Researcher': " Viewing as Researcher: Focus on raw data, correlations, and downloadable datasets.",
+        'Student/Researcher': "🎓 Viewing as Researcher: Focus on raw data, correlations, and downloadable datasets.",
         'NGO Partner': "🤝 Viewing as NGO: Focus on funding gaps, partnership opportunities, and impact metrics."
     },
     'sw': {
-        'Policymaker': " Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.",
+        'Policymaker': "👔 Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.",
         'Community Health Worker (CHW)': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.",
         'Student/Researcher': "🎓 Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.",
         'NGO Partner': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."
@@ -574,12 +465,8 @@ with tab2:
 
     with col2:
         st.subheader(f"{L['interactive_map']}: {region}")
-        zoom_level = 9 if country == "Tanzania 🇹🇿" else 6
-        
-        # Use cached map to prevent blinking
-        cached_map = build_map(data['lat'], data['lon'], zoom_level, country == "Tanzania 🇹")
-        
-        # Use a unique key to prevent re-rendering
+        zoom_level = 9 if country == "Tanzania" else 6
+        cached_map = build_map(data['lat'], data['lon'], zoom_level)
         st_folium(cached_map, width=800, height=600, key="main_map")
 
 # ==============================================================================
@@ -588,7 +475,6 @@ with tab2:
 with tab3:
     st.header(L['ai_header'])
     
-    # AI Chat Section
     if "messages" not in st.session_state: st.session_state.messages = []
     for message in st.session_state.messages:
         with st.chat_message(message["role"]): st.markdown(message["content"])
@@ -606,25 +492,18 @@ with tab3:
             response = L['summary'].format(region=region, mmr=data['mmr'], htn=data['htn'], poverty=data['poverty'])
         
         fhir_payload = {"resourceType": "Bundle", "type": "transaction", "entry": [{"resource": {"resourceType": "CarePlan", "status": "active", "intent": "plan", "title": f"Intervention for {region}", "subject": {"reference": f"Location/TZ-{region}"}}}]}
-        
         full_response = f"{response}\n\n**{L['fhir_title']}:**\n```json\n{json.dumps(fhir_payload, indent=2)}\n```"
         
         with st.chat_message("assistant"): st.markdown(full_response)
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     st.markdown("---")
-    
-    # AFRICA'S TALKING USSD DEMO SECTION
     st.subheader(L['ussd_header'])
     st.caption(L['ussd_desc'])
     
     if st.button(f"📱 {L['ussd_start']}", use_container_width=True):
         screens, api_payload, at_response = simulate_africas_talking_ussd(region, data, st.session_state.lang)
-        
-        # Display USSD Flow as a visual journey
         st.markdown("### " + L['ussd_session'])
-        
-        # Create 4 columns for the 4 screens
         cols = st.columns(4)
         for i, screen in enumerate(screens):
             with cols[i]:
@@ -634,14 +513,11 @@ with tab3:
                     st.markdown(f"*User input: `{screen['api_text']}`*")
         
         st.markdown("---")
-        
-        # Show the actual Africa's Talking API structure
         col_api1, col_api2 = st.columns(2)
         with col_api1:
             st.markdown("### 📤 " + L['ussd_payload'] + " (Request)")
             st.code(json.dumps(api_payload, indent=2), language='json')
             st.caption("POST to: https://api.africastalking.com/version1/ussd")
-        
         with col_api2:
             st.markdown("### 📥 Africa's Talking Response")
             st.code(json.dumps(at_response, indent=2), language='json')
