@@ -303,41 +303,50 @@ with tab1:
     st.markdown("---")
     st.subheader(L['dhis2_header'])
     
-    # Category 1: Communicable Diseases
+        # Category 1: Communicable Diseases (3 per row)
     with st.expander(L['cat_comm'], expanded=True):
-        col1, col2, col3, col4, col5 = st.columns(5)
-        col1.metric(L['malaria'], data['mal'], help=f"Target: <{L['mal_target']}")
-        col2.metric(L['mal_pos'], f"{data['mal_pos']}%", help=f"Target: <{L['pos_target']}%")
-        col3.metric(L['cholera'], data['cholera'], help=f"Target: {L['chol_target']}")
-        col4.metric(L['tb'], data['tb'], help=f"Target: <{L['tb_target']}")
-        col5.metric(L['llin'], f"{data['llin']}%", help=f"Target: >{L['llin_target']}%")
+        st.markdown("#### Communicable Diseases & Climate")
+        row1 = st.columns(3)
+        row1[0].metric(L['malaria'], data['mal'], help=f"Target: <{L['mal_target']}")
+        row1[1].metric(L['mal_pos'], f"{data['mal_pos']}%", help=f"Target: <{L['pos_target']}%")
+        row1[2].metric(L['cholera'], data['cholera'], help=f"Target: {L['chol_target']}")
+        
+        row2 = st.columns(2)
+        row2[0].metric(L['tb'], data['tb'], help=f"Target: <{L['tb_target']}")
+        row2[1].metric(L['llin'], f"{data['llin']}%", help=f"Target: >{L['llin_target']}%")
 
-    # Category 2: MNCH & Immunization
+    # Category 2: MNCH & Immunization (3 per row)
     with st.expander(L['cat_mnch'], expanded=True):
-        col1, col2, col3, col4, col5, col6, col7 = st.columns(7)
-        col1.metric(L['mmr'], data['mmr'], help=f"Target: <{L['mmr_target']}")
-        col2.metric(L['imr'], data['imr'], help=f"Target: <{L['imr_target']}")
-        col3.metric(L['anc4'], f"{data['anc4']}%", help=f"Target: >{L['anc_target']}%")
-        col4.metric(L['sba'], f"{data['sba']}%", help=f"Target: >{L['sba_target']}%")
-        col5.metric(L['sam'], f"{data['sam']}%", help=f"Target: <{L['sam_target']}%")
-        col6.metric(L['fic'], f"{data['fic']}%", help=f"Target: >{L['fic_target']}%")
-        col7.metric(L['penta_drop'], f"{data['penta_drop']}%", help=f"Target: <{L['drop_target']}%")
+        st.markdown("#### Maternal, Newborn & Child Health")
+        row1 = st.columns(3)
+        row1[0].metric(L['mmr'], data['mmr'], help=f"Target: <{L['mmr_target']}")
+        row1[1].metric(L['imr'], data['imr'], help=f"Target: <{L['imr_target']}")
+        row1[2].metric(L['anc4'], f"{data['anc4']}%", help=f"Target: >{L['anc_target']}%")
+        
+        row2 = st.columns(4)
+        row2[0].metric(L['sba'], f"{data['sba']}%", help=f"Target: >{L['sba_target']}%")
+        row2[1].metric(L['sam'], f"{data['sam']}%", help=f"Target: <{L['sam_target']}%")
+        row2[2].metric(L['fic'], f"{data['fic']}%", help=f"Target: >{L['fic_target']}%")
+        row2[3].metric(L['penta_drop'], f"{data['penta_drop']}%", help=f"Target: <{L['drop_target']}%")
 
-    # Category 3: NCDs & Risk Factors
+    # Category 3: NCDs & Risk Factors (2 per row)
     with st.expander(L['cat_ncd'], expanded=True):
-        col1, col2, col3, col4 = st.columns(4)
-        col1.metric(L['htn'], f"{data['htn']}%", help=f"Target: >{L['htn_target']}%")
-        col2.metric(L['dm'], f"{data['dm']}%", help=f"Target: >{L['dm_target']}%")
-        col3.metric(L['cervical'], f"{data['cervical']}%", help=f"Target: >{L['cerv_target']}%")
-        col4.metric(L['tobacco'], f"{data['tobacco']}%", help=f"Target: <{L['tob_target']}%")
+        st.markdown("#### Non-Communicable Diseases & Risk Factors")
+        row1 = st.columns(2)
+        row1[0].metric(L['htn'], f"{data['htn']}%", help=f"Target: >{L['htn_target']}%")
+        row1[1].metric(L['dm'], f"{data['dm']}%", help=f"Target: >{L['dm_target']}%")
+        
+        row2 = st.columns(2)
+        row2[0].metric(L['cervical'], f"{data['cervical']}%", help=f"Target: >{L['cerv_target']}%")
+        row2[1].metric(L['tobacco'], f"{data['tobacco']}%", help=f"Target: <{L['tob_target']}%")
 
-    # Category 4: Health Systems & UHC
+    # Category 4: Health Systems & UHC (3 per row)
     with st.expander(L['cat_sys'], expanded=True):
-        col1, col2, col3 = st.columns(3)
-        col1.metric(L['stockout'], f"{data['stockout']}%", help=f"Target: <{L['stock_target']}%")
-        col2.metric(L['hw'], data['hw'], help=f"Target: >{L['hw_target']}")
-        col3.metric(L['oop'], f"{data['oop']}%", help=f"Target: <{L['oop_target']}%")
-
+        st.markdown("#### Health Systems Strengthening & UHC")
+        row1 = st.columns(3)
+        row1[0].metric(L['stockout'], f"{data['stockout']}%", help=f"Target: <{L['stock_target']}%")
+        row1[1].metric(L['hw'], data['hw'], help=f"Target: >{L['hw_target']}")
+        row1[2].metric(L['oop'], f"{data['oop']}%", help=f"Target: <{L['oop_target']}%")
     st.markdown("---")
     
     # Comprehensive Visualization: Target vs Actual
