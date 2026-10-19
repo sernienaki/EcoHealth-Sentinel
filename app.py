@@ -329,7 +329,7 @@ role_messages = {
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4']])
+tab1, tab2, tab3, tab4, tab5 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], "🧠 ITU Agents & Pipeline"])
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD (FIXED SMUDGED TEXT)
@@ -642,3 +642,156 @@ References: {policy_text}, WHO Guidelines, HSSP V, Vision 2050.
 """
     st.text_area(L['preview'], brief, height=400)
     st.download_button(L['download'], brief, file_name=f"Brief_{region}_{country}.txt")
+
+
+# ==============================================================================
+# TAB 5: ITU MULTI-AGENT MISSION CONTROL & Y.3172 PIPELINE SANDBOX
+# Transparent rule-based demonstration; no external APIs are called.
+# ==============================================================================
+with tab5:
+    st.header("EcoHealth Sentinel | ITU Multi-Agent Mission Control")
+    st.warning("DEMONSTRATION MODE: The regional indicators embedded in this prototype are illustrative, not verified live DHIS2 data. Agent outputs are rule-based and are not official Ministry decisions.")
+    st.markdown("Maps this application's workflow to ITU-T Y.3172 concepts. This is not a claim of formal standards certification.")
+
+    scenario = st.selectbox("Sandbox scenario", [
+        "Baseline review of selected region", "Missing facility coordinates",
+        "Outdated reporting period", "Attempt to process identifiable patient data",
+        "Conflicting policy evidence"
+    ], key="itu_scenario")
+    st.caption("Synthetic test conditions only. No production system is contacted.")
+
+    def _agent(name, task, evidence, checks, finding, limitation, status="Completed"):
+        return {"agent": name, "status": status, "task": task, "evidence": evidence,
+                "checks": checks, "finding": finding, "limitation": limitation}
+
+    def _run_agents():
+        evidence = (f"Selected region: {region}, {country}; malaria={data['mal']}, "
+                    f"cholera={data['cholera']}, fully immunised children={data['fic']}%, "
+                    f"medicine stockout={data['stockout']}%.")
+        a1 = _agent("1. Health Data Analyst",
+            "Inspect selected indicators and assess whether they support an operational conclusion.",
+            evidence + " Source date and reporting period are not verified.",
+            ["Input values present", "Units must remain indicator-specific", "Source/date provenance check"],
+            "Values are available for demonstration, but source, reporting period, and validation evidence are absent.",
+            "Do not treat these values as official surveillance findings.", "Warning")
+        if scenario == "Missing facility coordinates":
+            a1.update(status="Warning", finding="Coordinates are missing in this test scenario; geographic analysis is withheld.",
+                      checks=["Missing-coordinate condition injected", "No random substitute coordinates permitted"])
+        elif scenario == "Outdated reporting period":
+            a1.update(status="Warning", finding="Reporting period is marked outdated; trend interpretation is paused.",
+                      checks=["Stale-period condition injected", "Freshness check failed"])
+        elif scenario == "Attempt to process identifiable patient data":
+            a1.update(status="Blocked", finding="Identifiable patient data is outside this aggregate analytics workflow.",
+                      checks=["Sensitive-input scenario detected", "Aggregate-only workflow enforced"])
+
+        a2 = _agent("2. Policy and Legal Adviser",
+            "Identify governance evidence needed before a recommendation is actionable.",
+            "Official policy retrieval is not connected in this prototype.",
+            ["Would require official title/version", "Would require passage-level citations", "Would check scope and effective date"],
+            "Policy verification is pending; no legal compliance conclusion can be made.",
+            "No automated official policy retrieval is implemented.", "Warning")
+        if scenario == "Conflicting policy evidence":
+            a2.update(status="Warning", finding="Conflict test active: compare authority, date, scope, and effective status before resolving.",
+                      checks=["Conflict scenario injected", "Automatic resolution withheld"])
+
+        a3 = _agent("3. Institutional Response Adviser",
+            "Map a potential action to a responsible stakeholder and approvals.",
+            "General role mapping; no institution is connected to this demo.",
+            ["Separate recommendation from official decision", "Identify responsible level", "Flag approval dependencies"],
+            "A relevant regional or council health management team could review a verified finding; no action is sent or authorised.",
+            "This simulated adviser does not speak for any public institution.")
+
+        a4 = _agent("4. Governance and Compliance Reviewer",
+            "Check privacy, provenance, uncertainty, and unsupported claims.",
+            f"Scenario: {scenario}. Dataset status: illustrative prototype values.",
+            ["No production writes", "No patient records loaded", "Provenance warning required"],
+            "Keep outputs labelled illustrative until sources, dates, permissions, and safeguards are verified.",
+            "This is not a formal legal or security audit.")
+        if scenario == "Attempt to process identifiable patient data":
+            a4.update(status="Blocked", finding="BLOCK: use approved de-identified or aggregated data in this workflow.")
+        return [a1, a2, a3, a4]
+
+    if st.button("▶ Run agent team", type="primary", key="run_itu_agents"):
+        st.session_state["itu_agent_results"] = _run_agents()
+        st.session_state["itu_agent_scenario_run"] = scenario
+
+    results = st.session_state.get("itu_agent_results", [])
+    if results:
+        st.subheader("Agent execution trace")
+        st.caption("Last run: " + st.session_state.get("itu_agent_scenario_run", "Not recorded"))
+        cols = st.columns(2)
+        for i, result in enumerate(results):
+            with cols[i % 2]:
+                with st.expander(f"{result['agent']} · {result['status']}", expanded=True):
+                    st.markdown("**Task**")
+                    st.write(result["task"])
+                    st.markdown("**Evidence consulted**")
+                    st.write(result["evidence"])
+                    st.markdown("**Checks performed**")
+                    for check in result["checks"]:
+                        st.markdown("- " + check)
+                    st.markdown("**Finding**")
+                    st.info(result["finding"])
+                    st.caption("Limitation: " + result["limitation"])
+        if any(r["status"] == "Blocked" for r in results):
+            st.error("Orchestrator decision: BLOCKED. Downstream operational use is not permitted.")
+        elif any(r["status"] == "Warning" for r in results):
+            st.warning("Orchestrator decision: REVIEW REQUIRED. Resolve warnings before operational use.")
+        else:
+            st.info("Orchestrator decision: demonstration only; source verification is still required.")
+        st.markdown("**Next step:** verify dataset source and period, attach official policy evidence, and obtain required authorisation.")
+        with st.expander("Structured agent trace (JSON)"):
+            st.json(results)
+
+    st.divider()
+    st.header("ITU-T Y.3172 Pipeline Monitor")
+    st.caption("SRC, C, PP, M, P, D and SINK stages coordinated by the ML Function Orchestrator (MLFO).")
+    stages = [
+        ("SRC", "Source", "Selected regional indicator record or sandbox input"),
+        ("C", "Collector", "Load input and attach provenance metadata"),
+        ("PP", "Preprocessor", "Check fields, freshness, units, and missing values"),
+        ("M", "Model", "Run transparent agent rules and analytical checks"),
+        ("P", "Policy", "Apply privacy, evidence, and governance gates"),
+        ("D", "Distributor", "Prepare output for the user interface"),
+        ("SINK", "Inference target", "Display findings, warnings, and trace"),
+    ]
+    if st.button("⚙ Execute pipeline", key="run_itu_pipeline"):
+        trace = []
+        blocked = scenario == "Attempt to process identifiable patient data"
+        for code, label, detail in stages:
+            if blocked and code in ("M", "D", "SINK"):
+                status, message = "Blocked", "Stopped by privacy gate; downstream processing withheld."
+            elif scenario == "Missing facility coordinates" and code == "PP":
+                status, message = "Warning", "Geographic analysis unavailable: coordinates missing in test scenario."
+            elif scenario == "Outdated reporting period" and code == "PP":
+                status, message = "Warning", "Freshness check failed; trend claims withheld."
+            elif scenario == "Conflicting policy evidence" and code == "P":
+                status, message = "Warning", "Policy conflict requires review; automatic resolution withheld."
+            elif code == "M":
+                status, message = "Completed", "Rule-based analysis executed; no external model/API called."
+            else:
+                status, message = "Completed", detail
+            trace.append({"stage": code, "name": label, "status": status, "detail": message,
+                          "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z"})
+            if status == "Blocked":
+                break
+        st.session_state["itu_pipeline_trace"] = trace
+
+    trace = st.session_state.get("itu_pipeline_trace", [])
+    if trace:
+        for step in trace:
+            c1, c2, c3 = st.columns([1, 1.4, 5])
+            c1.markdown(f"**{step['stage']}**")
+            c2.write(step["status"])
+            c3.write(step["detail"])
+        with st.expander("Pipeline execution log (JSON)"):
+            st.json(trace)
+
+    st.divider()
+    st.header("Sandbox isolation checks")
+    left, right = st.columns(2)
+    left.markdown("**Demonstrated here**")
+    left.markdown("- In-app prototype values only\n- Synthetic scenario conditions\n- No DHIS2, GoTHoMIS, or USSD API calls\n- Inspectable stage trace with UTC timestamps")
+    right.markdown("**Not yet implemented**")
+    right.markdown("- Live official policy retrieval and citation validation\n- Authenticated DHIS2 ingestion\n- Real model training or model registry\n- Persistent tamper-evident audit storage\n- Formal ITU conformance testing")
+    st.caption("Reference: ITU-T Y.3172, Architectural framework for machine learning in future networks including IMT-2020.")
