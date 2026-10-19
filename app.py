@@ -473,44 +473,59 @@ with tab2:
         components.html(m._repr_html_(), height=600, scrolling=False)
 
 # ==============================================================================
-# TAB 3: AI, FHIR & USSD (VOICE ASSISTANT ADDED)
+# TAB 3: AI, FHIR & USSD (WORKING VOICE ASSISTANT)
 # ==============================================================================
 with tab3:
     st.header(L['ai_header'])
     
-    # Voice Assistant Instructions
-    st.info("""
-    ### 🎙️ **Voice Assistant Mode**
-    **To Speak to the AI:** Click the microphone icon 🎙️ on your phone or laptop keyboard (usually next to the spacebar) while the chat box is active. It supports **English** and **Kiswahili**!
-    """)
-
     # Initialize chat history
     if "messages" not in st.session_state: 
         st.session_state.messages = []
-        
-    # Display chat messages
+    
+    # Display chat messages with Read Aloud buttons
     for message in st.session_state.messages:
         with st.chat_message(message["role"]): 
             st.markdown(message["content"])
-            # Add "Read Aloud" button for AI messages
             if message["role"] == "assistant":
-                # Create a safe string for JavaScript
-                safe_text = message["content"].replace("'", "\\'").replace('\n', ' ').replace('"', '')
+                # Unique ID for each message
+                msg_id = f"msg_{hash(message['content'])}"
+                safe_text = message["content"].replace("'", "\\'").replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
+                
                 st.markdown(f"""
-                <button onclick="speakText('{safe_text}')" style="background-color: #0066cc; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-top: 5px;">
+                <button id="btn_{msg_id}" onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
                     🔊 Read Aloud
                 </button>
+                <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
+                    ⏹️ Stop
+                </button>
                 <script>
-                function speakText(text) {{
-                    window.speechSynthesis.cancel(); // Stop any current speech
-                    const utterance = new SpeechSynthesisUtterance(text);
+                function speakText_{msg_id}() {{
+                    window.speechSynthesis.cancel();
+                    var text = "{safe_text}";
+                    var utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
-                    utterance.rate = 1.0;
+                    utterance.rate = 0.9;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1.0;
                     window.speechSynthesis.speak(utterance);
+                }}
+                function stopSpeech() {{
+                    window.speechSynthesis.cancel();
                 }}
                 </script>
                 """, unsafe_allow_html=True)
-                
+    
+    # Voice Input Instructions
+    st.info("""
+    ### 🎙️ **Voice Input**
+    **To speak your question:** 
+    1. Click the microphone icon 🎙️ on your keyboard (next to spacebar on mobile, or in the chat input on desktop)
+    2. Speak your question in **English** or **Kiswahili**
+    3. Press Enter to send
+    
+    **To hear the response:** Click the **🔊 Read Aloud** button below any AI message.
+    """)
+    
     # Chat input
     prompt = st.chat_input(L['chat_placeholder'].format(region=region))
     
@@ -532,19 +547,30 @@ with tab3:
         
         with st.chat_message("assistant"): 
             st.markdown(full_response)
-            # Add Read Aloud button for the new message
-            safe_text = full_response.replace("'", "\\'").replace('\n', ' ').replace('"', '')
+            # Add Read Aloud button for new message
+            msg_id = f"msg_{hash(full_response)}"
+            safe_text = full_response.replace("'", "\\'").replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
+            
             st.markdown(f"""
-            <button onclick="speakText('{safe_text}')" style="background-color: #0066cc; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px; margin-top: 5px;">
+            <button id="btn_{msg_id}" onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
                 🔊 Read Aloud
             </button>
+            <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
+                ⏹️ Stop
+            </button>
             <script>
-            function speakText(text) {{
+            function speakText_{msg_id}() {{
                 window.speechSynthesis.cancel();
-                const utterance = new SpeechSynthesisUtterance(text);
+                var text = "{safe_text}";
+                var utterance = new SpeechSynthesisUtterance(text);
                 utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
-                utterance.rate = 1.0;
+                utterance.rate = 0.9;
+                utterance.pitch = 1.0;
+                utterance.volume = 1.0;
                 window.speechSynthesis.speak(utterance);
+            }}
+            function stopSpeech() {{
+                window.speechSynthesis.cancel();
             }}
             </script>
             """, unsafe_allow_html=True)
@@ -553,7 +579,7 @@ with tab3:
 
     st.markdown("---")
     
-    # USSD DEMO SECTION
+    # USSD DEMO SECTION (Keep this exactly as it was)
     st.subheader(L['ussd_header'])
     st.caption(L['ussd_subheader'])
     
