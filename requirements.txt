@@ -4,3 +4,6 @@ numpy
 folium
 streamlit-folium
 plotly
+scikit-learn
+requests
+pypdf
