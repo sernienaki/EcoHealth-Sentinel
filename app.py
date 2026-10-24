@@ -6,7 +6,14 @@ from folium import FeatureGroup
 import streamlit.components.v1 as components
 import plotly.graph_objects as go
 import json
+import html
 from datetime import datetime
+from agents import render_agents_tab, tab_label
+from evals import render_harness_panel
+from viz import render_bullets, render_heatmap, render_risk_map, render_trend
+from rag import get_index, render_policy_library
+from outbreak import render_outbreak_tab, banner_lines, tab_label as outbreak_tab_label
+from packs import load_pack, context, available_packs, render_country_panel, BANNER
 
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
@@ -16,7 +23,7 @@ T = {
         'title': "EcoHealth Sentinel", 'welcome': "Welcome", 'verified': "Verified Professional", 'settings': "⚙️ Settings",
         'country': "Select Country", 'region': "Select Region (Tanzania)", 'role': "Your Role / Jukumu Lako",
         'lang': "Language / Lugha", 'theme': "Theme / Mandhari",
-        'tab1': " Executive Dashboard", 'tab2': "🌍 Socio-Ecological & Services", 'tab3': "🤖 AI, FHIR & USSD", 'tab4': "📄 Policy Brief",
+        'tab1': "📊 Executive Dashboard", 'tab2': " Socio-Ecological & Services", 'tab3': "🤖 AI, FHIR & USSD", 'tab4': "📄 Policy Brief",
         'policy': "Policy: HSSP V, Vision 2050 & PDPA 2022 | ITU ML Pipeline Compliant",
         'surveillance': "Comprehensive Public Health Surveillance",
         'dhis2_header': "20 Core DHIS2 Indicators (WHO & HSSP V Aligned)",
@@ -46,7 +53,7 @@ T = {
         'hw': "Health Worker Density (per 1k)", 'hw_target': 0.45,
         'oop': "Out-of-Pocket Expenditure (%)", 'oop_target': 15,
         'poverty': "Poverty Index", 'schools': "Schools", 'markets': "Markets",
-        'social': "Social & Economic Indicators", # FIXED KEY
+        'social': "Social & Economic Indicators",
         'map_guide': "How to Read This Map",
         'map_guide_text': "**Red Pins:** Health Facilities\n**Blue Circles:** WASH Points\n**Green Squares:** Schools\n**Orange Triangles:** Markets\n*Toggle layers using the icon on the top right.*",
         'interactive_map': "Interactive Service Map",
@@ -57,12 +64,13 @@ T = {
         'network_codes': "Network Subscription Shortcodes (Tanzania)",
         'network_desc': "Dial the code below on your respective network to access EcoHealth USSD services:",
         'how_it_works': "**How it works:**\n1. Dial the shortcode for your network.\n2. Navigate the menu using numbers (1, 2, 3...).\n3. Reports are sent directly to the District Medical Officer.\n4. Standard USSD rates apply (approx. 50 TZS per session).",
-        'brief_header': "Policy Brief Generator", 'download': "📥 Download Brief", 'preview': "Preview",
-        'roles': ["Policymaker", "Community Health Worker (CHW)", "Student/Researcher", "NGO Partner"],
-        'languages': ["English", "Kiswahili"], 'themes': ["Light Mode", "Dark Mode"],
+        'brief_header': "Policy Brief Generator", 'download': " Download Brief", 'preview': "Preview",
+        # Roles and themes use fixed codes; only the display labels are translated
+        'roles': {'policymaker': "Policymaker", 'chw': "Community Health Worker (CHW)", 'researcher': "Student/Researcher", 'ngo': "NGO Partner"},
+        'themes': {'light': "Light Mode", 'dark': "Dark Mode"},
         'green_ai': "♻️ Green AI Impact", 'co2_saved': "CO2 Saved", 'co2_delta': "-99% vs LLMs",
         'premium': "🌟 Premium Subscription", 'premium_desc': "Unlock Advanced AI, Bulk DHIS2 Exports, and Offline CHW Mode.",
-        'subscribe': "💳 Subscribe for $1/month", 'logout': "🚪 Log Out", 'login': "👤 Sign In",
+        'subscribe': "💳 Subscribe for $1/month", 'logout': "🚪 Log Out", 'login': " Sign In",
         'email': "Email Address", 'password': "Password", 'login_btn': "Log In",
         'new_user': "New to EcoHealth Sentinel?", 'create_account': "Create Account",
         'signup_header': "📝 Create Account", 'full_name': "Full Name", 'organization': "Organization",
@@ -71,16 +79,27 @@ T = {
         'verify_header': "📧 Verify Email", 'code_sent': "Code sent to", 'enter_code': "Enter 6-digit code",
         'verify_btn': "Verify Account", 'invalid_code': "Invalid code. Try 123456.", 'pass_error': "Passwords do not match or too short.",
         'orgs': ["Ministry of Health", "NGO", "Research Institute", "Community Health Worker", "Other"],
-        'alert_malaria': "🚨 **Alert for {region}:** High risk detected. Malaria: {mal}/1k, Cholera: {cholera} cases. Recommend immediate WASH intervention and LLIN distribution.",
+        'alert_malaria': " **Alert for {region}:** High risk detected. Malaria: {mal}/1k, Cholera: {cholera} cases. Recommend immediate WASH intervention and LLIN distribution.",
         'alert_vaccine': "💉 **Immunization in {region}:** FIC is at {fic}%. Below target. Recommend mop-up campaigns in rural wards.",
         'summary': "📊 **Summary for {region}:** MMR is {mmr}. Hypertension is {htn}%. Poverty index is {poverty}%.",
         'fhir_title': "GoTHoMIS FHIR Payload",
+        # Demo labels
+        'demo_banner': "DEMO VERSION: All figures, map points, and the assistant are illustrative samples, not live DHIS2 data. Do not use for clinical or policy decisions.",
+        'demo_login': "Demo login: any email and password is accepted.",
+        'demo_verify': "Demo only: no email is sent. Use code 123456.",
+        'demo_premium': "Coming soon: premium features are not yet available.",
+        'demo_green': "Illustrative estimate, not measured.",
+        'demo_map': "Sample markers only, not real facility locations.",
+        'demo_ai': "Rule based demo assistant, not a clinical AI.",
+        'demo_ussd': "Demo only: these shortcodes are not live. Do not dial them.",
+        'demo_brief': "Illustrative data. Verify with official DHIS2 figures before sharing.",
+        'demo_tag': "DEMO DRAFT, ILLUSTRATIVE DATA",
     },
     'sw': {
         'title': "EcoHealth Sentinel", 'welcome': "Karibu", 'verified': "Mtaalamu Aliyethibitishwa", 'settings': "⚙️ Mipangilio",
         'country': "Chagua Nchi", 'region': "Chagua Mkoa (Tanzania)", 'role': "Jukumu Lako / Your Role",
         'lang': "Lugha / Language", 'theme': "Mandhari / Theme",
-        'tab1': "📊 Dashibodi Kuu", 'tab2': " Jamii na Huduma", 'tab3': "🤖 AI, FHIR na USSD", 'tab4': "📄 Hati ya Sera",
+        'tab1': "📊 Dashibodi Kuu", 'tab2': "🌍 Jamii na Huduma", 'tab3': "🤖 AI, FHIR na USSD", 'tab4': "📄 Hati ya Sera",
         'policy': "Sera: HSSP V, Vision 2050 na PDPA 2022 | ITU ML Pipeline",
         'surveillance': "Ufuatiliaji wa Afya ya Umma",
         'dhis2_header': "Viashiria 20 vya Msingi vya DHIS2 (WHO na HSSP V)",
@@ -110,7 +129,7 @@ T = {
         'hw': "Msongamano wa Watumishi wa Afya", 'hw_target': 0.45,
         'oop': "Gharama ya Mfukoni (%)", 'oop_target': 15,
         'poverty': "Kiwango cha Umaskini", 'schools': "Shule", 'markets': "Masoko",
-        'social': "Viashiria vya Kijamii na Kiuchumi", # FIXED KEY
+        'social': "Viashiria vya Kijamii na Kiuchumi",
         'map_guide': "Jinsi ya Kusoma Ramani",
         'map_guide_text': "**Vipini Vyekundu:** Vituo vya Afya\n**Vidudu vya Bluu:** Vyanzo vya Maji\n**Mraba wa Kijani:** Shule\n**Pembetatu ya Chungwa:** Masoko\n*Badilisha tabaka kwa kutumia ikoni juu kulia.*",
         'interactive_map': "Ramani ya Huduma",
@@ -122,11 +141,11 @@ T = {
         'network_desc': "Piga namba hizi kwenye mtandao wako kufikia huduma za USSD za EcoHealth:",
         'how_it_works': "**Jinsi inavyofanya kazi:**\n1. Piga namba ya ufupishi ya mtandao wako.\n2. Tumia namba (1, 2, 3...) kusogeza menyu.\n3. Ripoti zinatumwa moja kwa moja kwa Mganga Mkuu wa Wilaya.\n4. Gharama za kawaida za USSD zinatumika (takriban 50 TZS).",
         'brief_header': "Kizalishaji cha Hati ya Sera", 'download': "📥 Pakua Hati", 'preview': "Hakiki",
-        'roles': ["Mtunga Sera", "Mhudumu wa Afya wa Jamii (CHW)", "Mwanafunzi/Mtafiti", "Mshirika wa NGO"],
-        'languages': ["English", "Kiswahili"], 'themes': ["Hali ya Mwanga", "Hali ya Giza"],
+        'roles': {'policymaker': "Mtunga Sera", 'chw': "Mhudumu wa Afya wa Jamii (CHW)", 'researcher': "Mwanafunzi/Mtafiti", 'ngo': "Mshirika wa NGO"},
+        'themes': {'light': "Hali ya Mwanga", 'dark': "Hali ya Giza"},
         'green_ai': "♻️ Athari ya AI ya Kijani", 'co2_saved': "CO2 Iliyookolewa", 'co2_delta': "-99% ikilinganishwa na LLM",
         'premium': "🌟 Uanachama wa Premium", 'premium_desc': "Fungua AI ya Hali ya Juu, Usafirishaji wa DHIS2, na Hali ya Nje ya Mtandao.",
-        'subscribe': "💳 Jiandikishe kwa $1/mwezi", 'logout': "🚪 Toka", 'login': "👤 Ingia",
+        'subscribe': "💳 Jiandikishe kwa $1/mwezi", 'logout': " Toka", 'login': "👤 Ingia",
         'email': "Barua Pepe", 'password': "Nenosiri", 'login_btn': "Ingia",
         'new_user': "Mgeni kwenye EcoHealth Sentinel?", 'create_account': "Fungua Akaunti",
         'signup_header': "📝 Fungua Akaunti", 'full_name': "Jina Kamili", 'organization': "Mashirika",
@@ -137,25 +156,43 @@ T = {
         'orgs': ["Wizara ya Afya", "NGO", "Taasisi ya Utafiti", "Mhudumu wa Afya wa Jamii", "Nyingine"],
         'alert_malaria': "🚨 **Tahadhari kwa {region}:** Hatari kubwa imegunduliwa. Malaria: {mal}/1k, Kipindupindu: {cholera} visa. Tunapendekeza kuingilia kati haraka.",
         'alert_vaccine': "💉 **Chanjo katika {region}:** FIC iko {fic}%. Chini ya lengo. Tunapendekeza kampeni za kufikia maeneo ya vijijini.",
-        'summary': " **Muhtasari wa {region}:** MMR ni {mmr}. Shinikizo la damu ni {htn}%. Umaskini ni {poverty}%.",
+        'summary': "📊 **Muhtasari wa {region}:** MMR ni {mmr}. Shinikizo la damu ni {htn}%. Umaskini ni {poverty}%.",
         'fhir_title': "Mzigo wa GoTHoMIS FHIR",
+        # Demo labels
+        'demo_banner': "TOLEO LA MAJARIBIO: Takwimu zote, alama za ramani, na msaidizi ni mifano ya kuonyesha, si data hai ya DHIS2. Usitumie kwa maamuzi ya kitabibu au ya sera.",
+        'demo_login': "Kuingia kwa majaribio: barua pepe na nenosiri lolote vinakubaliwa.",
+        'demo_verify': "Majaribio tu: hakuna barua pepe inayotumwa. Tumia msimbo 123456.",
+        'demo_premium': "Inakuja hivi karibuni: huduma za premium bado hazipatikani.",
+        'demo_green': "Makadirio ya mfano, hayajapimwa.",
+        'demo_map': "Alama za mfano tu, si maeneo halisi ya vituo.",
+        'demo_ai': "Msaidizi wa majaribio unaotumia kanuni, si AI ya kitabibu.",
+        'demo_ussd': "Majaribio tu: namba hizi hazifanyi kazi. Usizipige.",
+        'demo_brief': "Data ya mfano. Thibitisha na takwimu rasmi za DHIS2 kabla ya kushiriki.",
+        'demo_tag': "DRAFTI YA MAJARIBIO, DATA YA MFANO",
     }
 }
 
+ROLE_CODES = ['policymaker', 'chw', 'researcher', 'ngo']
+THEME_CODES = ['light', 'dark']
+LANG_CODES = ['en', 'sw']
+LANG_LABELS = {'en': "English", 'sw': "Kiswahili"}
+
 # ==============================================================================
-# 2. HIGH-END UI & THEME CSS
+# 2. SAFE UI & THEME CSS (Prevents Icon Smudging)
 # ==============================================================================
 st.set_page_config(page_title="EcoHealth Sentinel: Tanzania & EAC", layout="wide", initial_sidebar_state="expanded")
 
-if 'theme' not in st.session_state: st.session_state.theme = 'Light Mode'
+# Widget keys 'lang' and 'theme' hold fixed codes, so choices survive language changes
+if 'theme' not in st.session_state: st.session_state.theme = 'light'
+if 'lang' not in st.session_state: st.session_state.lang = 'en'
 
 def get_theme_css(theme):
-    if theme == 'Dark Mode':
+    if theme == 'dark':
         return """
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
         
-        /* Only apply font to text, NOT icons or layout divs */
+        /* Only apply font to text elements, NOT icons or layout divs */
         h1, h2, h3, h4, p, label, button, 
         [data-testid="stMetricLabel"], 
         [data-testid="stMetricValue"], 
@@ -185,7 +222,7 @@ def get_theme_css(theme):
         <style>
         @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
         
-        /* Only apply font to text, NOT icons or layout divs */
+        /* Only apply font to text elements, NOT icons or layout divs */
         h1, h2, h3, h4, p, label, button, 
         [data-testid="stMetricLabel"], 
         [data-testid="stMetricValue"], 
@@ -202,19 +239,13 @@ def get_theme_css(theme):
         button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }
         </style>
         """
+
 st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
 
 # ==============================================================================
-# 3. DATA STRUCTURES (UPDATED WITH ALL 20 DHIS2 INDICATORS)
+# 3. DATA STRUCTURES (ALL 20 DHIS2 INDICATORS) - ILLUSTRATIVE SAMPLE DATA
 # ==============================================================================
-TANZANIA_REGIONS = {
-    "Dar es Salaam": {"lat": -6.7924, "lon": 39.2083, "mal": 15, "mal_pos": 12, "cholera": 450, "tb": 210, "llin": 70, "mmr": 85, "imr": 19, "anc4": 68, "sba": 85, "sam": 2.5, "fic": 82, "penta_drop": 4, "htn": 31.2, "dm": 3.5, "cervical": 25, "tobacco": 9, "stockout": 8, "hw": 0.25, "oop": 32, "poverty": 12, "schools": 450, "markets": 120},
-    "Dodoma": {"lat": -6.1630, "lon": 35.7516, "mal": 45, "mal_pos": 22, "cholera": 80, "tb": 180, "llin": 65, "mmr": 115, "imr": 26, "anc4": 58, "sba": 75, "sam": 4.0, "fic": 75, "penta_drop": 6, "htn": 22.0, "dm": 2.1, "cervical": 15, "tobacco": 7, "stockout": 12, "hw": 0.10, "oop": 35, "poverty": 28, "schools": 320, "markets": 85},
-    "Mwanza": {"lat": -2.5164, "lon": 32.9175, "mal": 210, "mal_pos": 38, "cholera": 210, "tb": 250, "llin": 60, "mmr": 130, "imr": 28, "anc4": 55, "sba": 70, "sam": 5.5, "fic": 70, "penta_drop": 8, "htn": 20.5, "dm": 1.8, "cervical": 12, "tobacco": 6, "stockout": 15, "hw": 0.12, "oop": 30, "poverty": 25, "schools": 280, "markets": 60},
-    "Arusha": {"lat": -3.3869, "lon": 36.6830, "mal": 35, "mal_pos": 15, "cholera": 40, "tb": 160, "llin": 75, "mmr": 95, "imr": 21, "anc4": 72, "sba": 88, "sam": 3.0, "fic": 85, "penta_drop": 3, "htn": 26.0, "dm": 2.8, "cervical": 22, "tobacco": 8, "stockout": 7, "hw": 0.18, "oop": 28, "poverty": 18, "schools": 310, "markets": 75},
-    "Kilimanjaro": {"lat": -3.3488, "lon": 37.3407, "mal": 20, "mal_pos": 10, "cholera": 30, "tb": 140, "llin": 80, "mmr": 70, "imr": 18, "anc4": 78, "sba": 92, "sam": 2.0, "fic": 88, "penta_drop": 2, "htn": 24.0, "dm": 2.5, "cervical": 28, "tobacco": 7, "stockout": 5, "hw": 0.22, "oop": 25, "poverty": 15, "schools": 290, "markets": 65},
-    "Zanzibar": {"lat": -6.1659, "lon": 39.2022, "mal": 8, "mal_pos": 5, "cholera": 300, "tb": 120, "llin": 85, "mmr": 78, "imr": 18, "anc4": 80, "sba": 90, "sam": 2.2, "fic": 85, "penta_drop": 3, "htn": 28.0, "dm": 3.2, "cervical": 30, "tobacco": 5, "stockout": 6, "hw": 0.20, "oop": 25, "poverty": 14, "schools": 180, "markets": 40}
-}
+# Tanzania and Kenya data now live in pack_tz.json and pack_ke.json (country packs)
 
 EAC_NATIONAL = {
     "Kenya": {"lat": -0.0236, "lon": 37.9062, "mal": 45, "mal_pos": 18, "cholera": 90, "tb": 200, "llin": 70, "mmr": 342, "imr": 28, "anc4": 68, "sba": 75, "sam": 3.2, "fic": 80, "penta_drop": 6, "htn": 27.0, "dm": 2.5, "cervical": 22, "tobacco": 9, "stockout": 10, "hw": 0.18, "oop": 25, "poverty": 22, "schools": 12000, "markets": 3500},
@@ -237,11 +268,43 @@ def simulate_ussd(region, data, lang):
     return screens
 
 # ==============================================================================
-# 5. AUTHENTICATION SYSTEM
+# 4b. READ ALOUD HELPER (one place instead of two copies)
+# ==============================================================================
+def render_read_aloud(content):
+    # abs() keeps the JS function name valid, because hash() can be negative
+    msg_id = f"msg_{abs(hash(content))}"
+    plain_text = content.replace("**", "").replace("```json", "").replace("```", "").replace("\n", " ")
+    safe_text = plain_text.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
+    lang_code = 'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'
+    st.markdown(f"""
+    <button onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+        🔊 Read Aloud
+    </button>
+    <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
+        ⏹️ Stop
+    </button>
+    <script>
+    function speakText_{msg_id}() {{
+        window.speechSynthesis.cancel();
+        var text = "{safe_text}";
+        var utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = '{lang_code}';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        utterance.volume = 1.0;
+        window.speechSynthesis.speak(utterance);
+    }}
+    function stopSpeech() {{
+        window.speechSynthesis.cancel();
+    }}
+    </script>
+    """, unsafe_allow_html=True)
+
+# ==============================================================================
+# 5. AUTHENTICATION SYSTEM (DEMO ONLY)
 # ==============================================================================
 if 'user' not in st.session_state: st.session_state.user = None
 if 'auth_step' not in st.session_state: st.session_state.auth_step = 'login'
-if 'lang' not in st.session_state: st.session_state.lang = 'en'
 
 L = T[st.session_state.lang]
 st.sidebar.title(f"🌍 {L['title']}")
@@ -249,8 +312,9 @@ st.sidebar.title(f"🌍 {L['title']}")
 if st.session_state.user is None:
     if st.session_state.auth_step == 'login':
         st.sidebar.header(L['login'])
-        email = st.sidebar.text_input(L['email'], placeholder="name@hospital.go.tz")
-        password = st.sidebar.text_input(L['password'], type="password")
+        st.sidebar.caption(f"🧪 {L['demo_login']}")
+        email = st.sidebar.text_input(L['email'], placeholder="name@hospital.go.tz", key="login_email")
+        password = st.sidebar.text_input(L['password'], type="password", key="login_password")
         if st.sidebar.button(L['login_btn'], use_container_width=True) and email and password:
             st.session_state.user = {"email": email, "name": email.split('@')[0].capitalize(), "role": L['verified'], "org": "Ministry of Health"}
             st.rerun()
@@ -260,11 +324,12 @@ if st.session_state.user is None:
             st.session_state.auth_step = 'signup'; st.rerun()
     elif st.session_state.auth_step == 'signup':
         st.sidebar.header(L['signup_header'])
-        name = st.sidebar.text_input(L['full_name'])
-        email = st.sidebar.text_input(L['email'])
-        org = st.sidebar.selectbox(L['organization'], L['orgs'])
-        password = st.sidebar.text_input(L['create_pass'], type="password")
-        confirm = st.sidebar.text_input(L['confirm_pass'], type="password")
+        name = st.sidebar.text_input(L['full_name'], key="signup_name")
+        email = st.sidebar.text_input(L['email'], key="signup_email")
+        org_index = st.sidebar.selectbox(L['organization'], range(len(L['orgs'])), format_func=lambda i: L['orgs'][i], key="signup_org")
+        org = L['orgs'][org_index]
+        password = st.sidebar.text_input(L['create_pass'], type="password", key="signup_password")
+        confirm = st.sidebar.text_input(L['confirm_pass'], type="password", key="signup_confirm")
         if st.sidebar.button(L['signup_btn'], use_container_width=True):
             if password == confirm and len(password) > 5:
                 st.session_state.pending_user = {"name": name, "email": email, "org": org}
@@ -275,7 +340,8 @@ if st.session_state.user is None:
     elif st.session_state.auth_step == 'verify':
         st.sidebar.header(L['verify_header'])
         st.sidebar.success(f"{L['code_sent']} {st.session_state.pending_user['email']}")
-        code = st.sidebar.text_input(L['enter_code'], placeholder="123456")
+        st.sidebar.caption(f"🧪 {L['demo_verify']}")
+        code = st.sidebar.text_input(L['enter_code'], placeholder="123456", key="verify_code")
         if st.sidebar.button(L['verify_btn'], use_container_width=True):
             if code == "123456": 
                 st.session_state.user = st.session_state.pending_user
@@ -289,50 +355,78 @@ else:
     st.sidebar.markdown("---")
     st.sidebar.subheader(L['premium'])
     st.sidebar.write(L['premium_desc'])
+    st.sidebar.caption(f"🧪 {L['demo_premium']}")
     st.sidebar.link_button(L['subscribe'], "https://buymeacoffee.com/ecohealth", use_container_width=True)
     st.sidebar.markdown("---")
     st.sidebar.subheader(L['green_ai'])
     st.sidebar.metric(L['co2_saved'], "0.045 kg/prediction", delta=L['co2_delta'])
+    st.sidebar.caption(f"🧪 {L['demo_green']}")
     st.sidebar.caption("Lightweight heuristic models used instead of energy-intensive LLMs. Compliant with Sustainable AI principles (Ueda et al., 2024).")
     st.sidebar.markdown("---")
     if st.sidebar.button(L['logout'], use_container_width=True): 
         st.session_state.user = None; st.session_state.auth_step = 'login'; st.rerun()
 
 # ==============================================================================
-# 6. APP SETTINGS
+# 6. APP SETTINGS (fixed codes + widget keys fix the Kiswahili crash and theme loop)
 # ==============================================================================
 st.sidebar.header(L['settings'])
-lang_choice = st.sidebar.radio(L['lang'], L['languages'])
-if lang_choice == "Kiswahili": st.session_state.lang = 'sw'; L = T['sw']
-else: st.session_state.lang = 'en'; L = T['en']
+st.sidebar.radio(L['lang'], LANG_CODES, format_func=lambda c: LANG_LABELS[c], key='lang')
+st.sidebar.radio(L['theme'], THEME_CODES, format_func=lambda c: L['themes'][c], key='theme')
 
-theme_choice = st.sidebar.radio(L['theme'], L['themes'])
-if theme_choice != st.session_state.theme: st.session_state.theme = theme_choice; st.rerun()
-
-country = st.sidebar.selectbox(L['country'], ["Tanzania", "Kenya", "Uganda", "Rwanda", "Burundi", "South Sudan"])
-if country == "Tanzania":
-    region = st.sidebar.selectbox(L['region'], list(TANZANIA_REGIONS.keys()))
-    data = TANZANIA_REGIONS[region]
-    policy_text = L['policy']
+PACK_BY_NAME = {name: load_pack(code) for code, name in available_packs()}
+LEGACY = [c for c in EAC_NATIONAL if c not in PACK_BY_NAME]
+country = st.sidebar.selectbox(L['country'], list(PACK_BY_NAME) + LEGACY, key='country')
+pack = PACK_BY_NAME.get(country)
+TARGET_KEYS = {'mal_target': 'mal', 'pos_target': 'mal_pos', 'chol_target': 'cholera', 'tb_target': 'tb', 'llin_target': 'llin',
+               'mmr_target': 'mmr', 'imr_target': 'imr', 'anc_target': 'anc4', 'sba_target': 'sba', 'sam_target': 'sam',
+               'fic_target': 'fic', 'drop_target': 'penta_drop', 'htn_target': 'htn', 'dm_target': 'dm', 'cerv_target': 'cervical',
+               'tob_target': 'tobacco', 'stock_target': 'stockout', 'hw_target': 'hw', 'oop_target': 'oop'}
+if pack:
+    ctx = context(pack)
+    _idx = get_index(pack['code'])
+    if _idx is not None:
+        ctx = {**ctx, 'index': _idx}
+    _pend = st.session_state.pop('_pending_region', None)
+    if _pend in pack['regions']:
+        st.session_state[f"region_{pack['code']}"] = _pend
+    region = st.sidebar.selectbox(pack['region_label'][st.session_state.lang], list(pack['regions']), key=f"region_{pack['code']}")
+    data = pack['regions'][region]
+    policy_text = pack['policy_text'][st.session_state.lang]
+    eval_regions = pack['regions']
+    refs = ", ".join(pack['references'])
+    L = dict(L)
+    for tk, ik in TARGET_KEYS.items():
+        L[tk] = pack['targets'][ik][0]
 else:
+    ctx = None
     region = "National Overview"
     data = EAC_NATIONAL[country]
-    policy_text = "National Health Strategy & EAC Protocol"
+    policy_text = "National Health Strategy & EAC Protocol (no country pack yet)"
+    eval_regions = {region: data}
+    refs = "WHO Guidelines"
 
-role = st.sidebar.selectbox(L['role'], L['roles'])
+role = st.sidebar.selectbox(L['role'], ROLE_CODES, format_func=lambda c: L['roles'][c], key='role')
+role_label = L['roles'][role]
+
 st.title(f"{L['title']}: {region}, {country}")
-st.info(f"️ {policy_text}")
+st.warning(f"🧪 {L['demo_banner']}")
+if pack and pack.get('data_status') == 'placeholder':
+    st.error(f"🚧 {BANNER[st.session_state.lang]}")
+if pack:
+    for _line in banner_lines(pack, region, st.session_state.lang, st.session_state)[:2]:
+        st.error(f"🛰️ {_line}")
+st.info(f"🛡️ {policy_text}")
 
 role_messages = {
-    'en': {'Policymaker': "👔 Viewing as Policymaker: Focus on KPIs, funding gaps, and population-level trends.", 'Community Health Worker (CHW)': "📱 Viewing as CHW: Focus on actionable tasks, USSD alerts, and community-level data.", 'Student/Researcher': "🎓 Viewing as Researcher: Focus on raw data, correlations, and downloadable datasets.", 'NGO Partner': "🤝 Viewing as NGO: Focus on funding gaps, partnership opportunities, and impact metrics."},
-    'sw': {'Policymaker': " Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.", 'Community Health Worker (CHW)': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.", 'Student/Researcher': "🎓 Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.", 'NGO Partner': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."}
+    'en': {'policymaker': "👔 Viewing as Policymaker: Focus on KPIs, funding gaps, and population-level trends.", 'chw': "📱 Viewing as CHW: Focus on actionable tasks, USSD alerts, and community-level data.", 'researcher': "🎓 Viewing as Researcher: Focus on raw data, correlations, and downloadable datasets.", 'ngo': " Viewing as NGO: Focus on funding gaps, partnership opportunities, and impact metrics."},
+    'sw': {'policymaker': "👔 Unatazama kama Mtunga Sera: Lengo ni viashiria vya msingi, mapungufu ya fedha, na mwenendo.", 'chw': "📱 Unatazama kama CHW: Lengo ni kazi zinazofanyika, tahadhari za USSD, na data ya jamii.", 'researcher': " Unatazama kama Mtafiti: Lengo ni data ghafi, uhusiano, na datasets zinazopakuliwa.", 'ngo': "🤝 Unatazama kama NGO: Lengo ni mapungufu ya ufadhili, fursa za ushirikiano, na viashiria vya athari."}
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], "🧠 ITU Agents & Pipeline"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang)])
 
 # ==============================================================================
-# TAB 1: EXECUTIVE DASHBOARD (FIXED SMUDGED TEXT)
+# TAB 1: EXECUTIVE DASHBOARD (CLEAN LAYOUT)
 # ==============================================================================
 with tab1:
     st.header(L['surveillance'])
@@ -350,7 +444,6 @@ with tab1:
     
     # Category 1: Communicable Diseases (3 per row)
     with st.expander(L['cat_comm'], expanded=True):
-        st.markdown("#### Communicable Diseases & Climate")
         row1 = st.columns(3)
         row1[0].metric(L['malaria'], data['mal'], help=f"Target: <{L['mal_target']}")
         row1[1].metric(L['mal_pos'], f"{data['mal_pos']}%", help=f"Target: <{L['pos_target']}%")
@@ -362,7 +455,6 @@ with tab1:
 
     # Category 2: MNCH & Immunization (3 per row)
     with st.expander(L['cat_mnch'], expanded=True):
-        st.markdown("#### Maternal, Newborn & Child Health")
         row1 = st.columns(3)
         row1[0].metric(L['mmr'], data['mmr'], help=f"Target: <{L['mmr_target']}")
         row1[1].metric(L['imr'], data['imr'], help=f"Target: <{L['imr_target']}")
@@ -376,7 +468,6 @@ with tab1:
 
     # Category 3: NCDs & Risk Factors (2 per row)
     with st.expander(L['cat_ncd'], expanded=True):
-        st.markdown("#### Non-Communicable Diseases & Risk Factors")
         row1 = st.columns(2)
         row1[0].metric(L['htn'], f"{data['htn']}%", help=f"Target: >{L['htn_target']}%")
         row1[1].metric(L['dm'], f"{data['dm']}%", help=f"Target: >{L['dm_target']}%")
@@ -387,7 +478,6 @@ with tab1:
 
     # Category 4: Health Systems & UHC (3 per row)
     with st.expander(L['cat_sys'], expanded=True):
-        st.markdown("#### Health Systems Strengthening & UHC")
         row1 = st.columns(3)
         row1[0].metric(L['stockout'], f"{data['stockout']}%", help=f"Target: <{L['stock_target']}%")
         row1[1].metric(L['hw'], data['hw'], help=f"Target: >{L['hw_target']}")
@@ -397,40 +487,19 @@ with tab1:
     
     # Comprehensive Visualization: Target vs Actual
     st.subheader(L['target_chart'])
-    
-    indicators = [
-        (L['malaria'], data['mal'], L['mal_target']),
-        (L['mal_pos'], data['mal_pos'], L['pos_target']),
-        (L['llin'], data['llin'], L['llin_target']),
-        (L['mmr'], data['mmr'], L['mmr_target']),
-        (L['imr'], data['imr'], L['imr_target']),
-        (L['anc4'], data['anc4'], L['anc_target']),
-        (L['sba'], data['sba'], L['sba_target']),
-        (L['fic'], data['fic'], L['fic_target']),
-        (L['htn'], data['htn'], L['htn_target']),
-        (L['stockout'], data['stockout'], L['stock_target']),
-        (L['oop'], data['oop'], L['oop_target'])
-    ]
-    
-    names = [i[0] for i in indicators]
-    current_vals = [i[1] for i in indicators]
-    target_vals = [i[2] for i in indicators]
-    
-    fig_target = go.Figure()
-    fig_target.add_trace(go.Bar(name='Current Value', y=names, x=current_vals, orientation='h', marker_color='#0066cc'))
-    fig_target.add_trace(go.Bar(name='National Target', y=names, x=target_vals, orientation='h', marker_color='#e74c3c', opacity=0.5))
-    fig_target.update_layout(
-        barmode='group', height=500, yaxis={'categoryorder': 'total ascending'},
-        plot_bgcolor='white', font=dict(family='Times New Roman', size=12),
-        xaxis_title="Value", legend=dict(orientation="h", yanchor="bottom", y=1.02)
-    )
-    st.plotly_chart(fig_target, use_container_width=True)
+    render_bullets(L, st.session_state.lang, region, data, ctx, st.session_state.theme)
+    st.markdown("---")
+    render_heatmap(L, st.session_state.lang, eval_regions, ctx, region, st.session_state.theme)
+    st.markdown("---")
+    render_trend(L, st.session_state.lang, pack, ctx, region, data, st.session_state.theme)
 
 # ==============================================================================
-# TAB 2: SOCIO-ECOLOGICAL & SERVICES MAP (GLITCH-FIXED)
+# TAB 2: SOCIO-ECOLOGICAL & SERVICES MAP
 # ==============================================================================
 with tab2:
     st.header("🌍 Socio-Ecological Determinants & Social Services")
+    render_risk_map(L, st.session_state.lang, pack, eval_regions, ctx, region, st.session_state.theme)
+    st.markdown("---")
     col1, col2 = st.columns([1, 2])
     
     with col1:
@@ -445,38 +514,40 @@ with tab2:
 
     with col2:
         st.subheader(f"{L['interactive_map']}: {region}")
-        zoom_level = 9 if country == "Tanzania" else 6
+        st.caption(f"🧪 {L['demo_map']}")
+        zoom_level = 9 if pack else 6
         
         m = folium.Map(location=[data['lat'], data['lon']], zoom_start=zoom_level, tiles="OpenStreetMap")
         
-        hosp_group = FeatureGroup(name='🏥 Health Facilities')
+        hosp_group = FeatureGroup(name=' Health Facilities')
         for i in range(5):
-            folium.Marker(location=[data['lat'] + np.random.uniform(-0.1, 0.1), data['lon'] + np.random.uniform(-0.1, 0.1)], popup=f"<b>Health Facility {i+1}</b>", icon=folium.Icon(color='red', icon='plus', prefix='fa')).add_to(hosp_group)
+            folium.Marker(location=[data['lat'] + np.random.uniform(-0.1, 0.1), data['lon'] + np.random.uniform(-0.1, 0.1)], popup=f"<b>Sample Health Facility {i+1}</b>", icon=folium.Icon(color='red', icon='plus', prefix='fa')).add_to(hosp_group)
         hosp_group.add_to(m)
         
         wash_group = FeatureGroup(name='💧 WASH Points')
         for i in range(8):
-            folium.CircleMarker(location=[data['lat'] + np.random.uniform(-0.15, 0.15), data['lon'] + np.random.uniform(-0.15, 0.15)], radius=8, color='blue', fill=True, fill_opacity=0.7, popup=f"<b>Water Point {i+1}</b>").add_to(wash_group)
+            folium.CircleMarker(location=[data['lat'] + np.random.uniform(-0.15, 0.15), data['lon'] + np.random.uniform(-0.15, 0.15)], radius=8, color='blue', fill=True, fill_opacity=0.7, popup=f"<b>Sample Water Point {i+1}</b>").add_to(wash_group)
         wash_group.add_to(m)
         
         school_group = FeatureGroup(name='🏫 Schools')
         for i in range(6):
-            folium.RegularPolygonMarker(location=[data['lat'] + np.random.uniform(-0.12, 0.12), data['lon'] + np.random.uniform(-0.12, 0.12)], number_of_sides=4, radius=10, color='green', fill=True, fill_opacity=0.7, popup=f"<b>School {i+1}</b>").add_to(school_group)
+            folium.RegularPolygonMarker(location=[data['lat'] + np.random.uniform(-0.12, 0.12), data['lon'] + np.random.uniform(-0.12, 0.12)], number_of_sides=4, radius=10, color='green', fill=True, fill_opacity=0.7, popup=f"<b>Sample School {i+1}</b>").add_to(school_group)
         school_group.add_to(m)
         
-        market_group = FeatureGroup(name='🛒 Markets')
+        market_group = FeatureGroup(name=' Markets')
         for i in range(4):
-            folium.RegularPolygonMarker(location=[data['lat'] + np.random.uniform(-0.08, 0.08), data['lon'] + np.random.uniform(-0.08, 0.08)], number_of_sides=3, radius=10, color='orange', fill=True, fill_opacity=0.7, popup=f"<b>Market {i+1}</b>").add_to(market_group)
+            folium.RegularPolygonMarker(location=[data['lat'] + np.random.uniform(-0.08, 0.08), data['lon'] + np.random.uniform(-0.08, 0.08)], number_of_sides=3, radius=10, color='orange', fill=True, fill_opacity=0.7, popup=f"<b>Sample Market {i+1}</b>").add_to(market_group)
         market_group.add_to(m)
         
         folium.LayerControl(collapsed=False).add_to(m)
         components.html(m._repr_html_(), height=600, scrolling=False)
 
 # ==============================================================================
-# TAB 3: AI, FHIR & USSD (WORKING VOICE ASSISTANT)
+# TAB 3: AI, FHIR & USSD
 # ==============================================================================
 with tab3:
     st.header(L['ai_header'])
+    st.caption(f"🧪 {L['demo_ai']}")
     
     # Initialize chat history
     if "messages" not in st.session_state: 
@@ -487,33 +558,7 @@ with tab3:
         with st.chat_message(message["role"]): 
             st.markdown(message["content"])
             if message["role"] == "assistant":
-                # Unique ID for each message
-                msg_id = f"msg_{hash(message['content'])}"
-                safe_text = message["content"].replace("'", "\\'").replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
-                
-                st.markdown(f"""
-                <button id="btn_{msg_id}" onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
-                    🔊 Read Aloud
-                </button>
-                <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
-                    ⏹️ Stop
-                </button>
-                <script>
-                function speakText_{msg_id}() {{
-                    window.speechSynthesis.cancel();
-                    var text = "{safe_text}";
-                    var utterance = new SpeechSynthesisUtterance(text);
-                    utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
-                    utterance.rate = 0.9;
-                    utterance.pitch = 1.0;
-                    utterance.volume = 1.0;
-                    window.speechSynthesis.speak(utterance);
-                }}
-                function stopSpeech() {{
-                    window.speechSynthesis.cancel();
-                }}
-                </script>
-                """, unsafe_allow_html=True)
+                render_read_aloud(message["content"])
     
     # Voice Input Instructions
     st.info("""
@@ -534,7 +579,7 @@ with tab3:
         with st.chat_message("user"): 
             st.markdown(prompt)
         
-        # AI Logic
+        # AI Logic (keyword rules, not a trained model)
         if "malaria" in prompt.lower() or "cholera" in prompt.lower():
             response = L['alert_malaria'].format(region=region, mal=data['mal'], cholera=data['cholera'])
         elif "vaccine" in prompt.lower() or "fic" in prompt.lower():
@@ -547,43 +592,18 @@ with tab3:
         
         with st.chat_message("assistant"): 
             st.markdown(full_response)
-            # Add Read Aloud button for new message
-            msg_id = f"msg_{hash(full_response)}"
-            safe_text = full_response.replace("'", "\\'").replace('"', '\\"').replace('\n', '\\n').replace('\r', '')
-            
-            st.markdown(f"""
-            <button id="btn_{msg_id}" onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
-                🔊 Read Aloud
-            </button>
-            <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
-                ⏹️ Stop
-            </button>
-            <script>
-            function speakText_{msg_id}() {{
-                window.speechSynthesis.cancel();
-                var text = "{safe_text}";
-                var utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = '{'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'}';
-                utterance.rate = 0.9;
-                utterance.pitch = 1.0;
-                utterance.volume = 1.0;
-                window.speechSynthesis.speak(utterance);
-            }}
-            function stopSpeech() {{
-                window.speechSynthesis.cancel();
-            }}
-            </script>
-            """, unsafe_allow_html=True)
+            render_read_aloud(full_response)
             
         st.session_state.messages.append({"role": "assistant", "content": full_response})
 
     st.markdown("---")
     
-    # USSD DEMO SECTION (Keep this exactly as it was)
+    # USSD DEMO SECTION
     st.subheader(L['ussd_header'])
     st.caption(L['ussd_subheader'])
+    st.caption(f"🧪 {L['demo_ussd']}")
     
-    if st.button(f"📱 {L['ussd_start']}", use_container_width=True):
+    if st.button(f" {L['ussd_start']}", use_container_width=True):
         screens = simulate_ussd(region, data, st.session_state.lang)
         st.markdown("### " + L['ussd_session'])
         cols = st.columns(4)
@@ -597,12 +617,14 @@ with tab3:
         st.markdown("---")
         st.subheader(L['network_codes'])
         st.write(L['network_desc'])
+        st.warning(f"🧪 {L['demo_ussd']}")
         
-        col_vod, col_tigo, col_air, col_ttcl = st.columns(4)
-        col_vod.metric("Vodacom", "*149*27#")
-        col_tigo.metric("Tigo (Yas)", "*150*00*27#")
-        col_air.metric("Airtel", "*150*27#")
-        col_ttcl.metric("TTCL / Halotel", "*149*27#")
+        nets = (pack or {}).get('ussd', [])
+        if nets:
+            for col, n in zip(st.columns(len(nets)), nets):
+                col.metric(n['network'], n['code'])
+        else:
+            st.info("No country pack yet: USSD shortcodes are not configured.")
         
         st.markdown("---")
         st.info(L['how_it_works'])
@@ -612,10 +634,13 @@ with tab3:
 # ==============================================================================
 with tab4:
     st.header(L['brief_header'])
+    st.caption(f"🧪 {L['demo_brief']}")
     brief = f"""
+*** {T['en']['demo_tag']} ***
+
 POLICY BRIEF: EcoHealth Sentinel
 Region: {region}, {country}
-Role Focus: {role}
+Role Focus: {role_label}
 Date: {datetime.now().strftime('%B %d, %Y')}
 
 1. EXECUTIVE SUMMARY
@@ -627,7 +652,7 @@ Date: {datetime.now().strftime('%B %d, %Y')}
 - NCDs: Hypertension ({data['htn']}%), Diabetes ({data['dm']}%).
 - Health Systems: Stockout ({data['stockout']}%), OOP ({data['oop']}%).
 
-3. RECOMMENDATIONS (Tailored for {role})
+3. RECOMMENDATIONS (Tailored for {role_label})
 1. Deploy OCV and WASH interventions for Cholera.
 2. Distribute LLINs and RDTs for Malaria.
 3. Scale up ANC and SBA services to reduce MMR.
@@ -638,160 +663,27 @@ Date: {datetime.now().strftime('%B %d, %Y')}
 - Increase FIC to >{L['fic_target']}% in 6 months.
 - Maintain medicine stockout rate below {L['stock_target']}%.
 
-References: {policy_text}, WHO Guidelines, HSSP V, Vision 2050.
+References: {policy_text}, {refs}.
+
+NOTE: All figures above are illustrative samples. Verify with official DHIS2 data before sharing.
 """
     st.text_area(L['preview'], brief, height=400)
     st.download_button(L['download'], brief, file_name=f"Brief_{region}_{country}.txt")
 
-
 # ==============================================================================
-# TAB 5: ITU MULTI-AGENT MISSION CONTROL & Y.3172 PIPELINE SANDBOX
-# Transparent rule-based demonstration; no external APIs are called.
+# TAB 5: AGENTS AND ITU Y.3172 PIPELINE
 # ==============================================================================
 with tab5:
-    st.header("EcoHealth Sentinel | ITU Multi-Agent Mission Control")
-    st.warning("DEMONSTRATION MODE: The regional indicators embedded in this prototype are illustrative, not verified live DHIS2 data. Agent outputs are rule-based and are not official Ministry decisions.")
-    st.markdown("Maps this application's workflow to ITU-T Y.3172 concepts. This is not a claim of formal standards certification.")
+    render_country_panel(pack, st.session_state.lang)
+    st.markdown("---")
+    render_policy_library(pack, st.session_state.lang)
+    st.markdown("---")
+    render_agents_tab(st.session_state.lang, region, data, ctx)
+    st.markdown("---")
+    render_harness_panel(st.session_state.lang, region, eval_regions, ctx)
 
-    scenario = st.selectbox("Sandbox scenario", [
-        "Baseline review of selected region", "Missing facility coordinates",
-        "Outdated reporting period", "Attempt to process identifiable patient data",
-        "Conflicting policy evidence"
-    ], key="itu_scenario")
-    st.caption("Synthetic test conditions only. No production system is contacted.")
-
-    def _agent(name, task, evidence, checks, finding, limitation, status="Completed"):
-        return {"agent": name, "status": status, "task": task, "evidence": evidence,
-                "checks": checks, "finding": finding, "limitation": limitation}
-
-    def _run_agents():
-        evidence = (f"Selected region: {region}, {country}; malaria={data['mal']}, "
-                    f"cholera={data['cholera']}, fully immunised children={data['fic']}%, "
-                    f"medicine stockout={data['stockout']}%.")
-        a1 = _agent("1. Health Data Analyst",
-            "Inspect selected indicators and assess whether they support an operational conclusion.",
-            evidence + " Source date and reporting period are not verified.",
-            ["Input values present", "Units must remain indicator-specific", "Source/date provenance check"],
-            "Values are available for demonstration, but source, reporting period, and validation evidence are absent.",
-            "Do not treat these values as official surveillance findings.", "Warning")
-        if scenario == "Missing facility coordinates":
-            a1.update(status="Warning", finding="Coordinates are missing in this test scenario; geographic analysis is withheld.",
-                      checks=["Missing-coordinate condition injected", "No random substitute coordinates permitted"])
-        elif scenario == "Outdated reporting period":
-            a1.update(status="Warning", finding="Reporting period is marked outdated; trend interpretation is paused.",
-                      checks=["Stale-period condition injected", "Freshness check failed"])
-        elif scenario == "Attempt to process identifiable patient data":
-            a1.update(status="Blocked", finding="Identifiable patient data is outside this aggregate analytics workflow.",
-                      checks=["Sensitive-input scenario detected", "Aggregate-only workflow enforced"])
-
-        a2 = _agent("2. Policy and Legal Adviser",
-            "Identify governance evidence needed before a recommendation is actionable.",
-            "Official policy retrieval is not connected in this prototype.",
-            ["Would require official title/version", "Would require passage-level citations", "Would check scope and effective date"],
-            "Policy verification is pending; no legal compliance conclusion can be made.",
-            "No automated official policy retrieval is implemented.", "Warning")
-        if scenario == "Conflicting policy evidence":
-            a2.update(status="Warning", finding="Conflict test active: compare authority, date, scope, and effective status before resolving.",
-                      checks=["Conflict scenario injected", "Automatic resolution withheld"])
-
-        a3 = _agent("3. Institutional Response Adviser",
-            "Map a potential action to a responsible stakeholder and approvals.",
-            "General role mapping; no institution is connected to this demo.",
-            ["Separate recommendation from official decision", "Identify responsible level", "Flag approval dependencies"],
-            "A relevant regional or council health management team could review a verified finding; no action is sent or authorised.",
-            "This simulated adviser does not speak for any public institution.")
-
-        a4 = _agent("4. Governance and Compliance Reviewer",
-            "Check privacy, provenance, uncertainty, and unsupported claims.",
-            f"Scenario: {scenario}. Dataset status: illustrative prototype values.",
-            ["No production writes", "No patient records loaded", "Provenance warning required"],
-            "Keep outputs labelled illustrative until sources, dates, permissions, and safeguards are verified.",
-            "This is not a formal legal or security audit.")
-        if scenario == "Attempt to process identifiable patient data":
-            a4.update(status="Blocked", finding="BLOCK: use approved de-identified or aggregated data in this workflow.")
-        return [a1, a2, a3, a4]
-
-    if st.button("▶ Run agent team", type="primary", key="run_itu_agents"):
-        st.session_state["itu_agent_results"] = _run_agents()
-        st.session_state["itu_agent_scenario_run"] = scenario
-
-    results = st.session_state.get("itu_agent_results", [])
-    if results:
-        st.subheader("Agent execution trace")
-        st.caption("Last run: " + st.session_state.get("itu_agent_scenario_run", "Not recorded"))
-        cols = st.columns(2)
-        for i, result in enumerate(results):
-            with cols[i % 2]:
-                with st.expander(f"{result['agent']} · {result['status']}", expanded=True):
-                    st.markdown("**Task**")
-                    st.write(result["task"])
-                    st.markdown("**Evidence consulted**")
-                    st.write(result["evidence"])
-                    st.markdown("**Checks performed**")
-                    for check in result["checks"]:
-                        st.markdown("- " + check)
-                    st.markdown("**Finding**")
-                    st.info(result["finding"])
-                    st.caption("Limitation: " + result["limitation"])
-        if any(r["status"] == "Blocked" for r in results):
-            st.error("Orchestrator decision: BLOCKED. Downstream operational use is not permitted.")
-        elif any(r["status"] == "Warning" for r in results):
-            st.warning("Orchestrator decision: REVIEW REQUIRED. Resolve warnings before operational use.")
-        else:
-            st.info("Orchestrator decision: demonstration only; source verification is still required.")
-        st.markdown("**Next step:** verify dataset source and period, attach official policy evidence, and obtain required authorisation.")
-        with st.expander("Structured agent trace (JSON)"):
-            st.json(results)
-
-    st.divider()
-    st.header("ITU-T Y.3172 Pipeline Monitor")
-    st.caption("SRC, C, PP, M, P, D and SINK stages coordinated by the ML Function Orchestrator (MLFO).")
-    stages = [
-        ("SRC", "Source", "Selected regional indicator record or sandbox input"),
-        ("C", "Collector", "Load input and attach provenance metadata"),
-        ("PP", "Preprocessor", "Check fields, freshness, units, and missing values"),
-        ("M", "Model", "Run transparent agent rules and analytical checks"),
-        ("P", "Policy", "Apply privacy, evidence, and governance gates"),
-        ("D", "Distributor", "Prepare output for the user interface"),
-        ("SINK", "Inference target", "Display findings, warnings, and trace"),
-    ]
-    if st.button("⚙ Execute pipeline", key="run_itu_pipeline"):
-        trace = []
-        blocked = scenario == "Attempt to process identifiable patient data"
-        for code, label, detail in stages:
-            if blocked and code in ("M", "D", "SINK"):
-                status, message = "Blocked", "Stopped by privacy gate; downstream processing withheld."
-            elif scenario == "Missing facility coordinates" and code == "PP":
-                status, message = "Warning", "Geographic analysis unavailable: coordinates missing in test scenario."
-            elif scenario == "Outdated reporting period" and code == "PP":
-                status, message = "Warning", "Freshness check failed; trend claims withheld."
-            elif scenario == "Conflicting policy evidence" and code == "P":
-                status, message = "Warning", "Policy conflict requires review; automatic resolution withheld."
-            elif code == "M":
-                status, message = "Completed", "Rule-based analysis executed; no external model/API called."
-            else:
-                status, message = "Completed", detail
-            trace.append({"stage": code, "name": label, "status": status, "detail": message,
-                          "timestamp_utc": datetime.utcnow().isoformat(timespec="seconds") + "Z"})
-            if status == "Blocked":
-                break
-        st.session_state["itu_pipeline_trace"] = trace
-
-    trace = st.session_state.get("itu_pipeline_trace", [])
-    if trace:
-        for step in trace:
-            c1, c2, c3 = st.columns([1, 1.4, 5])
-            c1.markdown(f"**{step['stage']}**")
-            c2.write(step["status"])
-            c3.write(step["detail"])
-        with st.expander("Pipeline execution log (JSON)"):
-            st.json(trace)
-
-    st.divider()
-    st.header("Sandbox isolation checks")
-    left, right = st.columns(2)
-    left.markdown("**Demonstrated here**")
-    left.markdown("- In-app prototype values only\n- Synthetic scenario conditions\n- No DHIS2, GoTHoMIS, or USSD API calls\n- Inspectable stage trace with UTC timestamps")
-    right.markdown("**Not yet implemented**")
-    right.markdown("- Live official policy retrieval and citation validation\n- Authenticated DHIS2 ingestion\n- Real model training or model registry\n- Persistent tamper-evident audit storage\n- Formal ITU conformance testing")
-    st.caption("Reference: ITU-T Y.3172, Architectural framework for machine learning in future networks including IMT-2020.")
+# ==============================================================================
+# TAB 6: OUTBREAK WATCH (threat board, signal triage, readiness, countdown, climate)
+# ==============================================================================
+with tab6:
+    render_outbreak_tab(st.session_state.lang, pack, region, eval_regions, ctx)
