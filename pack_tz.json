@@ -1,0 +1,446 @@
+{
+ "code": "tz",
+ "name": "Tanzania",
+ "languages": [
+  "en",
+  "sw"
+ ],
+ "region_label": {
+  "en": "Select Region",
+  "sw": "Chagua Mkoa"
+ },
+ "policy_text": {
+  "en": "Policy: HSSP V, Vision 2050 & PDPA 2022",
+  "sw": "Sera: HSSP V, Vision 2050 na PDPA 2022"
+ },
+ "references": [
+  "WHO Guidelines",
+  "HSSP V",
+  "Vision 2050"
+ ],
+ "regulator": "TCRA",
+ "data_law": "PDPA 2022",
+ "health_information_system": "DHIS2",
+ "data_status": "illustrative",
+ "data_note": "Sample values for demonstration. Not live DHIS2 data.",
+ "cholera_alert": 100,
+ "cholera_alert_status": "demo value, replace with the national definition",
+ "targets": {
+  "mal": [
+   50,
+   "lower"
+  ],
+  "mal_pos": [
+   20,
+   "lower"
+  ],
+  "cholera": [
+   0,
+   "lower"
+  ],
+  "tb": [
+   150,
+   "lower"
+  ],
+  "llin": [
+   80,
+   "higher"
+  ],
+  "mmr": [
+   70,
+   "lower"
+  ],
+  "imr": [
+   12,
+   "lower"
+  ],
+  "anc4": [
+   80,
+   "higher"
+  ],
+  "sba": [
+   90,
+   "higher"
+  ],
+  "sam": [
+   2,
+   "lower"
+  ],
+  "fic": [
+   90,
+   "higher"
+  ],
+  "penta_drop": [
+   5,
+   "lower"
+  ],
+  "htn": [
+   60,
+   "higher"
+  ],
+  "dm": [
+   50,
+   "higher"
+  ],
+  "cervical": [
+   70,
+   "higher"
+  ],
+  "tobacco": [
+   10,
+   "lower"
+  ],
+  "stockout": [
+   5,
+   "lower"
+  ],
+  "hw": [
+   0.45,
+   "higher"
+  ],
+  "oop": [
+   15,
+   "lower"
+  ]
+ },
+ "ussd": [
+  {
+   "network": "Vodacom",
+   "code": "*149*27#"
+  },
+  {
+   "network": "Tigo (Yas)",
+   "code": "*150*00*27#"
+  },
+  {
+   "network": "Airtel",
+   "code": "*150*27#"
+  },
+  {
+   "network": "TTCL / Halotel",
+   "code": "*149*27#"
+  }
+ ],
+ "regions": {
+  "Dar es Salaam": {
+   "lat": -6.7924,
+   "lon": 39.2083,
+   "mal": 15,
+   "mal_pos": 12,
+   "cholera": 450,
+   "tb": 210,
+   "llin": 70,
+   "mmr": 85,
+   "imr": 19,
+   "anc4": 68,
+   "sba": 85,
+   "sam": 2.5,
+   "fic": 82,
+   "penta_drop": 4,
+   "htn": 31.2,
+   "dm": 3.5,
+   "cervical": 25,
+   "tobacco": 9,
+   "stockout": 8,
+   "hw": 0.25,
+   "oop": 32,
+   "poverty": 12,
+   "schools": 450,
+   "markets": 120
+  },
+  "Dodoma": {
+   "lat": -6.163,
+   "lon": 35.7516,
+   "mal": 45,
+   "mal_pos": 22,
+   "cholera": 80,
+   "tb": 180,
+   "llin": 65,
+   "mmr": 115,
+   "imr": 26,
+   "anc4": 58,
+   "sba": 75,
+   "sam": 4.0,
+   "fic": 75,
+   "penta_drop": 6,
+   "htn": 22.0,
+   "dm": 2.1,
+   "cervical": 15,
+   "tobacco": 7,
+   "stockout": 12,
+   "hw": 0.1,
+   "oop": 35,
+   "poverty": 28,
+   "schools": 320,
+   "markets": 85
+  },
+  "Mwanza": {
+   "lat": -2.5164,
+   "lon": 32.9175,
+   "mal": 210,
+   "mal_pos": 38,
+   "cholera": 210,
+   "tb": 250,
+   "llin": 60,
+   "mmr": 130,
+   "imr": 28,
+   "anc4": 55,
+   "sba": 70,
+   "sam": 5.5,
+   "fic": 70,
+   "penta_drop": 8,
+   "htn": 20.5,
+   "dm": 1.8,
+   "cervical": 12,
+   "tobacco": 6,
+   "stockout": 15,
+   "hw": 0.12,
+   "oop": 30,
+   "poverty": 25,
+   "schools": 280,
+   "markets": 60
+  },
+  "Arusha": {
+   "lat": -3.3869,
+   "lon": 36.683,
+   "mal": 35,
+   "mal_pos": 15,
+   "cholera": 40,
+   "tb": 160,
+   "llin": 75,
+   "mmr": 95,
+   "imr": 21,
+   "anc4": 72,
+   "sba": 88,
+   "sam": 3.0,
+   "fic": 85,
+   "penta_drop": 3,
+   "htn": 26.0,
+   "dm": 2.8,
+   "cervical": 22,
+   "tobacco": 8,
+   "stockout": 7,
+   "hw": 0.18,
+   "oop": 28,
+   "poverty": 18,
+   "schools": 310,
+   "markets": 75
+  },
+  "Kilimanjaro": {
+   "lat": -3.3488,
+   "lon": 37.3407,
+   "mal": 20,
+   "mal_pos": 10,
+   "cholera": 30,
+   "tb": 140,
+   "llin": 80,
+   "mmr": 70,
+   "imr": 18,
+   "anc4": 78,
+   "sba": 92,
+   "sam": 2.0,
+   "fic": 88,
+   "penta_drop": 2,
+   "htn": 24.0,
+   "dm": 2.5,
+   "cervical": 28,
+   "tobacco": 7,
+   "stockout": 5,
+   "hw": 0.22,
+   "oop": 25,
+   "poverty": 15,
+   "schools": 290,
+   "markets": 65
+  },
+  "Zanzibar": {
+   "lat": -6.1659,
+   "lon": 39.2022,
+   "mal": 8,
+   "mal_pos": 5,
+   "cholera": 300,
+   "tb": 120,
+   "llin": 85,
+   "mmr": 78,
+   "imr": 18,
+   "anc4": 80,
+   "sba": 90,
+   "sam": 2.2,
+   "fic": 85,
+   "penta_drop": 3,
+   "htn": 28.0,
+   "dm": 3.2,
+   "cervical": 30,
+   "tobacco": 5,
+   "stockout": 6,
+   "hw": 0.2,
+   "oop": 25,
+   "poverty": 14,
+   "schools": 180,
+   "markets": 40
+  }
+ },
+ "kb": [
+  {
+   "id": "KB1",
+   "topic": "cholera_report",
+   "source": "HSSP V (placeholder)",
+   "text": "Priority disease alerts such as cholera must be reported to the District Medical Officer within 24 hours and the district response team activated.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB2",
+   "topic": "cholera_wash",
+   "source": "WHO cholera guidance (placeholder)",
+   "text": "Cholera response combines case management, safe water, sanitation and hygiene, community engagement and oral cholera vaccine where indicated.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB3",
+   "topic": "privacy",
+   "source": "PDPA 2022 (placeholder)",
+   "text": "Personal health data needs a lawful basis, must be limited to what is necessary and must be protected. Aggregated or anonymised data carries lower risk.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB4",
+   "topic": "sharing",
+   "source": "PDPA 2022 (placeholder)",
+   "text": "Sharing personal data with third parties or across borders needs safeguards and a documented legal basis.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB5",
+   "topic": "immunization",
+   "source": "HSSP V (placeholder)",
+   "text": "Immunization gaps are addressed through outreach and mop up campaigns in low coverage wards using routine DHIS2 coverage data.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB6",
+   "topic": "stockout",
+   "source": "HSSP V (placeholder)",
+   "text": "Essential medicine stockouts are escalated to the regional medical store with a replenishment plan.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB7",
+   "topic": "maternal",
+   "source": "HSSP V (placeholder)",
+   "text": "Maternal emergencies require referral, skilled birth attendance and emergency obstetric care with community transport support.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB8",
+   "topic": "ussd",
+   "source": "TCRA guidance (placeholder)",
+   "text": "Mobile services such as USSD must use approved shortcodes from the telecommunications regulator and protect subscriber data.",
+   "status": "placeholder"
+  },
+  {
+   "id": "KB9",
+   "topic": "digital",
+   "source": "Vision 2050 (placeholder)",
+   "text": "Digital health tools should expand access in rural areas and reduce inequality.",
+   "status": "placeholder"
+  }
+ ],
+ "documents": [
+  {
+   "id": "hssp5",
+   "title": "Health Sector Strategic Plan V (HSSP V), July 2021 to June 2026",
+   "type": "policy",
+   "status": "official, period ended",
+   "url": "https://mitu.or.tz/wp-content/uploads/2021/07/Tanzania-Health-Sector-Strategic-Plan-V-17-06-2021-Final-signed.pdf",
+   "note": "Copy hosted by the Mwanza Intervention Trials Unit. The plan period ended in June 2026. A plan for 2026/27 to 2030/31 was reported as being finalised, so add it when it is published."
+  },
+  {
+   "id": "pdpa2022",
+   "title": "Personal Data Protection Act, 2022 (Act No. 11 of 2022)",
+   "type": "law",
+   "status": "official, English translation",
+   "url": "https://oagmis.agctz.go.tz/storage/index-attachments/parliamentary-acts/j7IRGMnLsCryyuQXG5mozpPgPlfPUDqjd0gDYccD.pdf",
+   "note": "Attorney General's Chambers copy. Regulations on collection and processing and on complaints also exist, so add them."
+  },
+  {
+   "id": "vision2050",
+   "title": "Tanzania Development Vision 2050",
+   "type": "policy",
+   "status": "official, upload needed",
+   "url": null,
+   "note": "Launched on 17 July 2025, with implementation from 1 July 2026. Upload the official PDF."
+  },
+  {
+   "id": "vision2025",
+   "title": "Tanzania Development Vision 2025",
+   "type": "policy",
+   "status": "historical",
+   "url": null,
+   "note": "Ended in 2025. Keep only as background, and prefer Vision 2050 for current policy."
+  },
+  {
+   "id": "census2022",
+   "title": "2022 Population and Housing Census",
+   "type": "data",
+   "status": "official data",
+   "url": null,
+   "note": "Use for population denominators and urban and rural splits. It is data, so it is not indexed as policy text."
+  },
+  {
+   "id": "idsr3",
+   "title": "Technical Guidelines for Integrated Disease Surveillance and Response in the WHO African Region, third edition (2019)",
+   "type": "policy",
+   "status": "WHO guideline, upload needed",
+   "url": null,
+   "note": "Verify the title and edition. Upload the PDF so playbooks can cite it."
+  }
+ ],
+ "neighbors": [
+  "Kenya",
+  "Uganda",
+  "Rwanda",
+  "Burundi",
+  "Democratic Republic of the Congo",
+  "Zambia",
+  "Malawi",
+  "Mozambique"
+ ],
+ "entry_points": {
+  "Arusha": {
+   "borders": [
+    "Kenya"
+   ],
+   "airport": false,
+   "note": "Kenya border crossing (verify)"
+  },
+  "Kilimanjaro": {
+   "borders": [
+    "Kenya"
+   ],
+   "airport": true,
+   "note": "Kenya border crossings and Kilimanjaro International Airport (verify)"
+  },
+  "Mwanza": {
+   "borders": [
+    "Uganda",
+    "Kenya"
+   ],
+   "airport": true,
+   "note": "Lake Victoria ports and airport (verify)"
+  },
+  "Dar es Salaam": {
+   "borders": [],
+   "airport": true,
+   "note": "International airport and sea port (verify)"
+  },
+  "Zanzibar": {
+   "borders": [],
+   "airport": true,
+   "note": "Airport and sea port (verify)"
+  },
+  "Dodoma": {
+   "borders": [],
+   "airport": false,
+   "note": "No international entry point (verify)"
+  }
+ }
+}

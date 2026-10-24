@@ -1,0 +1,152 @@
+{
+ "as_of": "2026-10-20",
+ "disclaimer": "Figures were checked on the as_of date from the sources listed and go stale quickly. Verify with WHO, Africa CDC and the national Ministry of Health before any decision.",
+ "threats": [
+  {
+   "id": "ebola_bdbv_2026",
+   "type": "disease",
+   "key": "ebola",
+   "disease": "Ebola disease (Bundibugyo virus)",
+   "severity": 3,
+   "active": true,
+   "status": "Active. Public health emergency of international concern reported on 16 May 2026.",
+   "countries": [
+    "Democratic Republic of the Congo",
+    "Kenya"
+   ],
+   "locations": {
+    "Kenya": [
+     "Nairobi"
+    ]
+   },
+   "ended": {
+    "Uganda": "2026-08-27"
+   },
+   "last_case": {
+    "Kenya": "2026-10-18"
+   },
+   "figures": "DRC: 9,552 confirmed cases and 4,602 deaths (to 19 Oct). Kenya: 8 confirmed cases and 1 death (to 20 Oct); the first case was imported and reported on 6 Oct.",
+   "note": "Uganda declared its outbreak over on 27 Aug 2026 after a 42 day countdown. Specific vaccines and treatments were still under investigation in October 2026.",
+   "profile": {
+    "incubation": "2 to 21 days",
+    "spread": "Contact with blood or body fluids of a sick person or a body. Funerals and health care settings carry high risk.",
+    "source": "WHO fact sheets (verify)"
+   },
+   "sources": [
+    {
+     "title": "ECDC: Ebola outbreak in DRC and Uganda",
+     "url": "https://www.ecdc.europa.eu/en/ebola-outbreak-democratic-republic-congo-and-uganda",
+     "date": "2026-10-20",
+     "type": "primary"
+    },
+    {
+     "title": "Al Jazeera: Kenya confirms eighth Ebola case",
+     "url": "https://www.aljazeera.com/news/2026/10/19/kenya-confirms-eighth-ebola-case-amid-widening-regional-outbreak",
+     "date": "2026-10-19",
+     "type": "news"
+    },
+    {
+     "title": "Wikipedia: 2026 Ebola epidemic (PHEIC date, secondary source)",
+     "url": "https://en.wikipedia.org/wiki/2026_Ebola_epidemic",
+     "date": "2026-10-20",
+     "type": "secondary"
+    },
+    {
+     "title": "CRS: 2026 Ebola Outbreak FAQ (Uganda end date)",
+     "url": "https://www.congress.gov/crs-product/R49484",
+     "date": "2026-10-09",
+     "type": "secondary"
+    },
+    {
+     "title": "RIVM: Current information about Ebola",
+     "url": "https://www.rivm.nl/en/ebola/current-information",
+     "date": "2026-10-19",
+     "type": "primary"
+    }
+   ]
+  },
+  {
+   "id": "marburg_2026",
+   "type": "disease",
+   "key": "marburg",
+   "disease": "Marburg virus disease",
+   "severity": 3,
+   "active": false,
+   "status": "No active outbreak found. Ethiopia's first outbreak was declared over on 26 Jan 2026.",
+   "countries": [],
+   "last_case": {},
+   "figures": "Ethiopia: 14 confirmed cases and 9 deaths, 857 contacts followed (Nov 2025 to Jan 2026).",
+   "note": "Spillover from animal reservoirs such as fruit bats can cause new outbreaks. Marburg outbreaks have occurred in Tanzania in the last five years. No licensed vaccine or treatment.",
+   "profile": {
+    "incubation": "2 to 21 days",
+    "spread": "Close contact with body fluids of an infected person or contaminated surfaces. Fruit bats are the animal source.",
+    "source": "WHO fact sheets (verify)"
+   },
+   "sources": [
+    {
+     "title": "AP via WTOP: Ethiopia declares end of Marburg outbreak",
+     "url": "https://wtop.com/world/2026/01/ethiopia-declares-the-end-of-its-first-marburg-virus-outbreak/",
+     "date": "2026-01-26",
+     "type": "news"
+    },
+    {
+     "title": "Healio: Ethiopia's first Marburg outbreak is over",
+     "url": "https://www.healio.com/news/infectious-disease/20260127/ethiopias-first-marburg-outbreak-is-over",
+     "date": "2026-01-27",
+     "type": "news"
+    }
+   ]
+  },
+  {
+   "id": "mpox_2026",
+   "type": "disease",
+   "key": "mpox",
+   "disease": "Mpox",
+   "severity": 2,
+   "active": true,
+   "status": "Ongoing at lower intensity. Africa CDC lifted its continental emergency in January 2026.",
+   "countries": [],
+   "last_case": {},
+   "figures": "WHO report of 14 Sept 2026: 11 African countries had active transmission between 6 Jul and 16 Aug 2026, with 1,153 confirmed cases and 7 deaths. 35 African countries affected since Jan 2025.",
+   "note": "The country list is in the WHO report. Add the affected countries to this entry so Sentinel can calculate exposure.",
+   "profile": {
+    "incubation": "3 to 21 days",
+    "spread": "Close contact with a person with lesions, including household and sexual contact. Vaccination is part of the response.",
+    "source": "WHO fact sheets (verify)"
+   },
+   "sources": [
+    {
+     "title": "WHO mpox external situation report 69",
+     "url": "https://cdn.who.int/media/docs/default-source/_sage-2026/multi-country-outbreak-of-mpox--external-situation-report_69.pdf",
+     "date": "2026-09-14",
+     "type": "primary"
+    },
+    {
+     "title": "allAfrica: 11 African countries record 1,153 mpox cases",
+     "url": "https://allafrica.com/stories/202609160093.html",
+     "date": "2026-09-15",
+     "type": "news"
+    }
+   ]
+  },
+  {
+   "id": "enso_2026",
+   "type": "climate",
+   "key": "enso",
+   "disease": "El Niño",
+   "severity": 0,
+   "active": true,
+   "status": "El Niño advisory, strengthening (NOAA update of 10 Sept 2026).",
+   "figures": "NOAA: greater than 90% chance of a very strong event in the 2026 to 2027 northern winter, and a 75% chance of a historic event in October to December 2026.",
+   "note": "The 8 October update was not checked. Check ICPAC for the East Africa seasonal forecast.",
+   "sources": [
+    {
+     "title": "NOAA Climate Prediction Center: ENSO diagnostic discussion",
+     "url": "https://www.cpc.ncep.noaa.gov/products/analysis_monitoring/enso_advisory/ensodisc.html",
+     "date": "2026-09-10",
+     "type": "primary"
+    }
+   ]
+  }
+ ]
+}
