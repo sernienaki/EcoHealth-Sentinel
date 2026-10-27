@@ -271,34 +271,65 @@ def simulate_ussd(region, data, lang):
 # 4b. READ ALOUD HELPER (one place instead of two copies)
 # ==============================================================================
 def render_read_aloud(content):
-    # abs() keeps the JS function name valid, because hash() can be negative
-    msg_id = f"msg_{abs(hash(content))}"
-    plain_text = content.replace("**", "").replace("```json", "").replace("```", "").replace("\n", " ")
-    safe_text = plain_text.replace("\\", "\\\\").replace("'", "\\'").replace('"', '\\"')
-    lang_code = 'sw-TZ' if st.session_state.lang == 'sw' else 'en-US'
-    st.markdown(f"""
-    <button onclick="speakText_{msg_id}()" style="background-color: #0066cc; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px;">
+    """Render browser-native speech controls in an isolated Streamlit HTML component."""
+    import hashlib
+    import json
+
+    # Stable, safe identifier; Python's built-in hash changes between processes.
+    msg_id = "msg_" + hashlib.sha256(content.encode("utf-8")).hexdigest()[:12]
+    plain_text = content.replace("**", "").replace("```json", "").replace("```", " ")
+    plain_text = " ".join(plain_text.split())
+    safe_text = json.dumps(plain_text, ensure_ascii=False)
+    lang_code = "sw-TZ" if st.session_state.lang == "sw" else "en-US"
+
+    html = f"""
+    <div style="font-family: Arial, sans-serif; display:flex; gap:8px; align-items:center;">
+      <button id="play_{msg_id}" type="button"
+        style="background:#0066cc;color:white;border:0;border-radius:6px;padding:8px 14px;cursor:pointer;">
         🔊 Read Aloud
-    </button>
-    <button onclick="stopSpeech()" style="background-color: #e74c3c; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 14px; margin-top: 10px; margin-left: 10px;">
-        ⏹️ Stop
-    </button>
+      </button>
+      <button id="stop_{msg_id}" type="button"
+        style="background:#e74c3c;color:white;border:0;border-radius:6px;padding:8px 14px;cursor:pointer;">
+        ⏹ Stop
+      </button>
+      <span id="status_{msg_id}" role="status" aria-live="polite"
+        style="font-size:12px;color:#555;"></span>
+    </div>
     <script>
-    function speakText_{msg_id}() {{
-        window.speechSynthesis.cancel();
-        var text = "{safe_text}";
-        var utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = '{lang_code}';
-        utterance.rate = 0.9;
-        utterance.pitch = 1.0;
-        utterance.volume = 1.0;
-        window.speechSynthesis.speak(utterance);
-    }}
-    function stopSpeech() {{
-        window.speechSynthesis.cancel();
-    }}
+      (() => {{
+        const text = {safe_text};
+        const play = document.getElementById("play_{msg_id}");
+        const stop = document.getElementById("stop_{msg_id}");
+        const status = document.getElementById("status_{msg_id}");
+        const lang = {json.dumps(lang_code)};
+
+        play.addEventListener("click", () => {{
+          if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) {{
+            status.textContent = "Read Aloud is not supported in this browser.";
+            return;
+          }}
+          window.speechSynthesis.cancel();
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = lang;
+          utterance.rate = 0.9;
+          utterance.pitch = 1.0;
+          utterance.volume = 1.0;
+          utterance.onstart = () => {{ status.textContent = "Playing…"; }};
+          utterance.onend = () => {{ status.textContent = "Finished."; }};
+          utterance.onerror = (event) => {{
+            status.textContent = event.error === "canceled" ? "" : "Audio could not play. Check browser sound and voice settings.";
+          }};
+          window.speechSynthesis.speak(utterance);
+        }});
+
+        stop.addEventListener("click", () => {{
+          if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+          status.textContent = "Stopped.";
+        }});
+      }})();
     </script>
-    """, unsafe_allow_html=True)
+    """
+    components.html(html, height=54, scrolling=False)
 
 # ==============================================================================
 # 5. AUTHENTICATION SYSTEM (DEMO ONLY)
