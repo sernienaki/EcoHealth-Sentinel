@@ -188,8 +188,8 @@ def render_harness_panel(lang, region, regions, ctx=None):
     st.warning(x["warn"])
     if st.button(x["ev"], use_container_width=True, key="h_eval"):
         rows = run_eval(regions, factory, ctx, toolset)
-        st.session_state["h_eval"] = rows
-    rows = st.session_state.get("h_eval")
+        st.session_state["h_eval_rows"] = rows
+    rows = st.session_state.get("h_eval_rows")
     if rows:
         s = summarize(rows)
         if not any(r["category"] == "task" for r in rows):
