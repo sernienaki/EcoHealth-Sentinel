@@ -671,26 +671,14 @@ NOTE: All figures above are illustrative samples. Verify with official DHIS2 dat
     st.download_button(L['download'], brief, file_name=f"Brief_{region}_{country}.txt")
 
 # ==============================================================================
-# TAB 5: AGENTS, HARNESS AND EVALUATION
+# TAB 5: AGENTS AND ITU Y.3172 PIPELINE
 # ==============================================================================
-
-# 1. Define the full dictionary of regions for the evaluation harness
-# (This combines your Tanzania regions and EAC national data into one dict)
-eval_regions = {**TANZANIA_REGIONS, **EAC_NATIONAL}
-
 with tab5:
-    # Note: I removed render_country_panel and render_policy_library because 
-    # they are not defined in the agents.py or evals.py files you uploaded. 
-    # If you have them in a separate file, make sure to import them at the top!
-    
-    # 2. Render the Multi-Agent ITU Pipeline Tab
-    # (Matches the 3-argument signature in your agents.py)
     render_agents_tab(st.session_state.lang, region, data)
-    
     st.markdown("---")
     
-    # 3. Render the Harness and Evaluation Panel
-    # (Matches the 3-argument signature in your evals.py)
+    # Combine all regions for the evaluation harness right here
+    eval_regions = {**TANZANIA_REGIONS, **EAC_NATIONAL}
     render_harness_panel(st.session_state.lang, region, eval_regions)
 # ==============================================================================
 # TAB 6: OUTBREAK WATCH (threat board, signal triage, readiness, countdown, climate)
