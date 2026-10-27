@@ -677,8 +677,15 @@ with tab5:
     render_agents_tab(st.session_state.lang, region, data)
     st.markdown("---")
     
-    # Combine all regions for the evaluation harness right here
-    eval_regions = {**TANZANIA_REGIONS, **EAC_NATIONAL}
+    # Build the evaluation set from the available country packs and EAC demo entries.
+    # The selected country's eval_regions is already defined above; this adds all pack regions
+    # without relying on the undefined legacy TANZANIA_REGIONS constant.
+    all_pack_regions = {
+        region_name: region_data
+        for pack_code, _pack_name in available_packs()
+        for region_name, region_data in load_pack(pack_code).get('regions', {}).items()
+    }
+    eval_regions = {**all_pack_regions, **EAC_NATIONAL}
     render_harness_panel(st.session_state.lang, region, eval_regions)
 # ==============================================================================
 # TAB 6: OUTBREAK WATCH (threat board, signal triage, readiness, countdown, climate)
