@@ -14,6 +14,7 @@ from viz import render_bullets, render_heatmap, render_risk_map, render_trend
 from rag import get_index, render_policy_library
 from outbreak import render_outbreak_tab, banner_lines, tab_label as outbreak_tab_label
 from packs import load_pack, context, available_packs, render_country_panel, BANNER
+from event_response import render_event_response_tab
 
 # Minimal, responsive digital-health visual system.
 st.markdown("""
@@ -506,7 +507,7 @@ role_messages = {
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang)])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu"])
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD (CLEAN LAYOUT)
@@ -857,3 +858,9 @@ with tab5:
 # ==============================================================================
 with tab6:
     render_outbreak_tab(st.session_state.lang, pack, region, eval_regions, ctx)
+
+# ==============================================================================
+# TAB 7: EVENT & RESPONSE MANAGEMENT (synthetic sandbox; not connected to live systems)
+# ==============================================================================
+with tab7:
+    render_event_response_tab(st.session_state.lang, region)
