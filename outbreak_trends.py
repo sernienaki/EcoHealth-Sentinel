@@ -10,7 +10,7 @@ REQUIRED = ["epi_week", "condition", "region", "cases", "deaths", "reports_expec
 
 def _week_date(value):
     try:
-        return dt.datetime.strptime(str(value).strip().upper(), "%G-W%V").date()
+        return dt.datetime.strptime(str(value).strip().upper() + "-1", "%G-W%V-%u").date()
     except (ValueError, TypeError):
         return None
 
@@ -144,7 +144,7 @@ def render_outbreak_trends_tab(lang="en"):
     k2.metric(tr("Reported cases", "Visa vilivyoripotiwa"), int(view["cases"].sum()))
     k3.metric(tr("Reported deaths", "Vifo vilivyoripotiwa"), int(view["deaths"].sum()))
     k4.metric(tr("Mean reporting completeness", "Wastani wa ukamilifu"),
-        f"{valid['completeness_pct'].mean():.1f}%" if not valid.empty else tr("Not available", "Haipatikani"))
+        f"{(valid['reports_received'].sum() / valid['reports_expected'].sum() * 100):.1f}%" if not valid.empty else tr("Not available", "Haipatikani"))
     if valid.empty:
         st.info(tr("Completeness cannot be calculated because reports_expected is zero.", "Ukamilifu hauwezi kuhesabiwa kwa sababu reports_expected ni sifuri."))
     st.subheader(tr("Weekly case trends", "Mwenendo wa visa kwa wiki"))
