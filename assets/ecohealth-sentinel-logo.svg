@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 250" role="img" aria-labelledby="title desc">
+<title id="title">EcoHealth Sentinel</title>
+<desc id="desc">White digital public health symbol combining a medical cross, leaf forms and connected technology nodes.</desc>
+<rect width="720" height="250" rx="20" fill="#101817"/>
+<g fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round">
+<circle cx="105" cy="93" r="49" stroke-width="3" opacity=".85"/>
+<path d="M76 111 C77 81 95 62 122 60 C122 86 109 108 84 119" stroke-width="3"/>
+<path d="M82 111 L112 76" stroke-width="2"/>
+<path d="M105 76 V108 M89 92 H121" stroke-width="6"/>
+<path d="M142 54 H165 V39 H184" stroke-width="3"/><circle cx="190" cy="39" r="5" fill="#fff" stroke="none"/>
+<path d="M151 91 H174 V106 H188" stroke-width="3"/><circle cx="194" cy="106" r="5" fill="#fff" stroke="none"/>
+</g>
+<text x="220" y="102" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="49" font-weight="650" letter-spacing="-1.8">EcoHealth</text>
+<path d="M222 127 H293 M427 127 H498" stroke="#fff" stroke-width="1.5" opacity=".7"/>
+<text x="360" y="136" text-anchor="middle" fill="#fff" font-family="Inter, Arial, sans-serif" font-size="17" letter-spacing="8">SENTINEL</text>
+<text x="220" y="178" fill="#c8d4d0" font-family="Inter, Arial, sans-serif" font-size="13" letter-spacing="2.2">TECHNOLOGY · PUBLIC HEALTH</text>
+</svg>
