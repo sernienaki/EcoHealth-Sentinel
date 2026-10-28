@@ -90,6 +90,7 @@ def render_outbreak_trends_tab(lang="en"):
         "Chunguza mwenendo kwa wiki za epidemiolojia, ukamilifu wa taarifa, usambazaji wa kijiografia na ulinganisho na data za msingi. Ufafanuzi na vizingiti vya kitaifa vilivyoidhinishwa havijawekwa kwenye mfano huu."
     ))
     st.markdown("**Priority conditions:** " + ", ".join(PRIORITY_CONDITIONS))
+    st.markdown("**Reference sources:** [Tanzania MoH IDSR](https://hmisportal.moh.go.tz/themes/idsr) · [MoH Epidemiological Weekly Reports](https://www.moh.go.tz/services/27)")
     st.markdown(tr(
         "Required columns: epi_week, condition, region, cases, deaths, reports_expected, reports_received, period_type, source_name, source_date, data_status. One row per week, condition, region and period type. Baseline rows should use comparable weeks, case definitions and geography.",
         "Safu zinazohitajika: epi_week, condition, region, cases, deaths, reports_expected, reports_received, period_type, source_name, source_date, data_status. Mstari mmoja kwa wiki, hali, mkoa na aina ya kipindi. Data za msingi zitumie wiki, ufafanuzi wa visa na maeneo yanayolingana."
