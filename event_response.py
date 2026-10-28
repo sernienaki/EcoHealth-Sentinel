@@ -58,7 +58,7 @@ def _seed_events():
             "district": "SIMULATED district", "location_detail": "SIMULATED community",
             "description": "Synthetic example for testing intake, review and response tracking.",
             "source_type": "Community report (simulated)", "priority": "High",
-            "status": "reported", "reported_at": one, "detected_at": one,
+            "status": "reported", "reported_at": one, "onset_at": None, "detected_at": one,
             "notified_at": None, "response_started_at": None, "verified_at": None,
             "closed_at": None, "assigned_to": "Demo surveillance officer",
             "verification_note": "", "simulation": True,
@@ -72,7 +72,7 @@ def _seed_events():
             "district": "SIMULATED district", "location_detail": "SIMULATED market area",
             "description": "Synthetic example only; not a real event or alert.",
             "source_type": "Health facility report (simulated)", "priority": "Moderate",
-            "status": "under_review", "reported_at": two, "detected_at": two,
+            "status": "under_review", "reported_at": two, "onset_at": None, "detected_at": two,
             "notified_at": None, "response_started_at": None, "verified_at": None,
             "closed_at": None, "assigned_to": "Demo reviewer",
             "verification_note": "", "simulation": True, "tasks": [],
@@ -83,7 +83,7 @@ def _seed_events():
             "district": "SIMULATED district", "location_detail": "SIMULATED village",
             "description": "Synthetic One Health example for workflow demonstration.",
             "source_type": "Community report (simulated)", "priority": "Low",
-            "status": "not_verified", "reported_at": three, "detected_at": three,
+            "status": "not_verified", "reported_at": three, "onset_at": None, "detected_at": three,
             "notified_at": None, "response_started_at": None, "verified_at": None,
             "closed_at": None, "assigned_to": "Demo reviewer",
             "verification_note": "Synthetic example marked not verified.", "simulation": True, "tasks": [],
@@ -135,12 +135,12 @@ def _seven_one_seven(event):
     detected = event.get("detected_at")
     notified = event.get("notified_at")
     response = event.get("response_started_at")
-    detect_hours = _elapsed(detected)
+    onset_to_detection = _elapsed(event.get("onset_at"), detected) if event.get("onset_at") and detected else None
     notify_hours = _elapsed(detected, notified) if notified else None
     response_hours = _elapsed(notified, response) if notified and response else None
     return [
-        {"Milestone": "Detection → current / report age", "Hours": detect_hours,
-         "Target": "≤168 h (7 days)", "Status": "Not recorded" if detect_hours is None else ("Within target" if detect_hours <= 168 else "Over target")},
+        {"Milestone": "Onset → detection", "Hours": onset_to_detection,
+         "Target": "≤168 h (7 days)", "Status": "Not recorded" if onset_to_detection is None else ("Within target" if onset_to_detection <= 168 else "Over target")},
         {"Milestone": "Detection → notification", "Hours": notify_hours,
          "Target": "≤24 h (1 day)", "Status": "Not recorded" if notify_hours is None else ("Within target" if notify_hours <= 24 else "Over target")},
         {"Milestone": "Notification → response start", "Hours": response_hours,
@@ -285,6 +285,8 @@ def render_event_response_tab(lang="en", region="National Overview"):
             description = st.text_area(tr("What was observed? Do not include personal data.", "Nini kilichoonekana? Usiweke taarifa binafsi."))
             priority = st.selectbox(tr("Initial priority (human review required)", "Kipaumbele cha awali (ukaguzi wa binadamu unahitajika)"), PRIORITIES, index=1)
             assigned_to = st.text_input(tr("Assigned role / reviewer label", "Jukumu / lebo ya mkaguzi"), value="Unassigned")
+            onset_known = st.checkbox(tr("Approximate onset date known", "Tarehe ya kuanza inajulikana"), value=False)
+            onset_date = st.date_input(tr("Approximate onset date", "Tarehe ya takriban kuanza"), value=dt.date.today(), disabled=not onset_known)
             detected_date = st.date_input(tr("Detection date", "Tarehe ya kugundua"), value=dt.date.today())
             detected_time = st.time_input(tr("Detection time", "Muda wa kugundua"), value=dt.datetime.now().replace(second=0, microsecond=0).time())
             submitted = st.form_submit_button(tr("Register simulated event", "Sajili tukio la majaribio"))
@@ -300,7 +302,9 @@ def render_event_response_tab(lang="en", region="National Overview"):
                     "region": event_region.strip(), "district": district.strip() or "Not recorded",
                     "location_detail": location_detail.strip() or "Not recorded",
                     "description": description.strip(), "source_type": source_type, "priority": priority,
-                    "status": "reported", "reported_at": _now(), "detected_at": stamp,
+                    "status": "reported", "reported_at": _now(),
+                    "onset_at": dt.datetime.combine(onset_date, dt.time(12, 0)).astimezone().replace(microsecond=0).isoformat() if onset_known else None,
+                    "detected_at": stamp,
                     "notified_at": None, "response_started_at": None, "verified_at": None,
                     "closed_at": None, "assigned_to": assigned_to.strip(), "verification_note": "",
                     "simulation": True, "tasks": [],
