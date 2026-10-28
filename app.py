@@ -484,6 +484,13 @@ else:
 role = st.sidebar.selectbox(L['role'], ROLE_CODES, format_func=lambda c: L['roles'][c], key='role')
 role_label = L['roles'][role]
 
+logo_path = "assets/ecohealth-sentinel-logo.svg"
+try:
+    with open(logo_path, "rb") as logo_file:
+        st.image(logo_file.read(), use_container_width=True)
+except OSError:
+    st.markdown("## EcoHealth Sentinel")
+
 st.title(f"{L['title']}: {region}, {country}")
 st.warning(f"🧪 {L['demo_banner']}")
 if pack and pack.get('data_status') == 'placeholder':
