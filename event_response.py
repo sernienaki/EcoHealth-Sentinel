@@ -156,7 +156,6 @@ def _transition(event, new_status, note=""):
     stamp = _now()
     if new_status == "verified":
         event["verified_at"] = stamp
-        event["notified_at"] = event.get("notified_at") or stamp
     elif new_status == "response_active":
         event["notified_at"] = event.get("notified_at") or stamp
         event["response_started_at"] = stamp
@@ -236,6 +235,14 @@ def render_event_response_tab(lang="en", region="National Overview"):
                             st.rerun()
             else:
                 st.info(tr("This event is closed. No further workflow transitions are available.", "Tukio limefungwa. Hakuna hatua nyingine za mtiririko zinazopatikana."))
+
+            if event["status"] in ("under_review", "verified", "response_active") and not event.get("notified_at"):
+                if st.button(tr("Record notification to responsible authority", "Rekodi taarifa kwa mamlaka inayowajibika"), key=f"erm_notify_{selected_id}"):
+                    event["notified_at"] = _now()
+                    _audit(selected_id, "AUTHORITY_NOTIFIED", "Notification timestamp recorded by prototype user.")
+                    st.rerun()
+            elif event.get("notified_at"):
+                st.caption(f"{tr('Authority notification recorded', 'Taarifa kwa mamlaka imerekodiwa')}: {event['notified_at']}")
 
             st.markdown("#### " + tr("7-1-7 monitoring (prototype)", "Ufuatiliaji wa 7-1-7 (mfano)"))
             st.caption(tr("These are monitoring targets, not an automatic declaration or replacement for national disease-specific guidance. Missing timestamps are shown as not recorded.", "Haya ni malengo ya ufuatiliaji, si tamko la moja kwa moja wala mbadala wa mwongozo wa kitaifa wa ugonjwa husika. Tarehe zisizopo huonyeshwa kama hazijarekodiwa."))
