@@ -15,6 +15,51 @@ from rag import get_index, render_policy_library
 from outbreak import render_outbreak_tab, banner_lines, tab_label as outbreak_tab_label
 from packs import load_pack, context, available_packs, render_country_panel, BANNER
 
+# Minimal, responsive digital-health visual system.
+st.markdown("""
+<style>
+:root {
+  --eco-ink: #172b2b;
+  --eco-muted: #647777;
+  --eco-line: #e3eae8;
+  --eco-surface: #f7faf9;
+  --eco-accent: #176b5b;
+}
+.block-container { max-width: 1440px; padding-top: 1.6rem; padding-bottom: 3rem; }
+h1, h2, h3 { color: var(--eco-ink); letter-spacing: -0.025em; }
+h1 { font-weight: 700; }
+[data-testid="stMetric"] {
+  background: var(--eco-surface);
+  border: 1px solid var(--eco-line);
+  padding: 1rem 1.1rem;
+  border-radius: 14px;
+}
+[data-testid="stMetricLabel"] { color: var(--eco-muted); }
+[data-testid="stTabs"] button { font-weight: 600; }
+[data-testid="stTabs"] button[aria-selected="true"] {
+  color: var(--eco-accent);
+  border-bottom-color: var(--eco-accent);
+}
+div[data-testid="stExpander"] {
+  border: 1px solid var(--eco-line);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.stButton > button, .stDownloadButton > button {
+  border-radius: 10px;
+  font-weight: 600;
+  min-height: 2.6rem;
+}
+div[data-testid="stAlert"] { border-radius: 12px; }
+small, .stCaption { color: var(--eco-muted); }
+@media (max-width: 700px) {
+  .block-container { padding-left: 1rem; padding-right: 1rem; }
+  [data-testid="stMetric"] { padding: .7rem; }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
 # ==============================================================================
@@ -572,6 +617,88 @@ with tab2:
         
         folium.LayerControl(collapsed=False).add_to(m)
         components.html(m._repr_html_(), height=600, scrolling=False)
+
+    
+    st.markdown("---")
+    st.subheader("Health Facility Registry | Import & Preview")
+    st.caption(
+        "Import an authorized Ministry of Health Master Facility List or another permitted "
+        "facility dataset. The HFR screenshots shared during development are visual references, "
+        "not a downloadable dataset; their values are not treated as verified live data."
+    )
+    facility_file = st.file_uploader(
+        "Upload facility list (CSV or Excel)",
+        type=["csv", "xlsx"],
+        key="eco_facility_registry_upload",
+        help="Use a file you are authorized to access. Avoid patient-level or otherwise sensitive data."
+    )
+    if facility_file is not None:
+        try:
+            if facility_file.name.lower().endswith(".csv"):
+                facility_df = pd.read_csv(facility_file)
+            else:
+                facility_df = pd.read_excel(facility_file)
+            facility_df.columns = [str(col).strip() for col in facility_df.columns]
+            st.success(f"Loaded {len(facility_df):,} rows and {len(facility_df.columns)} columns.")
+            st.dataframe(facility_df.head(100), use_container_width=True, hide_index=True)
+            st.caption("Preview limited to the first 100 rows. Original source values are not modified.")
+
+            lower_columns = {str(col).strip().lower(): col for col in facility_df.columns}
+            type_candidates = ["facility_type", "facility type", "type", "facility_level", "level"]
+            type_col = next((lower_columns[name] for name in type_candidates if name in lower_columns), None)
+            name_candidates = ["facility_name", "facility name", "name", "facility"]
+            name_col = next((lower_columns[name] for name in name_candidates if name in lower_columns), None)
+            lat_candidates = ["latitude", "lat", "y"]
+            lon_candidates = ["longitude", "lon", "lng", "long", "x"]
+            lat_col = next((lower_columns[name] for name in lat_candidates if name in lower_columns), None)
+            lon_col = next((lower_columns[name] for name in lon_candidates if name in lower_columns), None)
+
+            m1, m2, m3 = st.columns(3)
+            m1.metric("Rows loaded", f"{len(facility_df):,}")
+            m2.metric("Facility types", str(facility_df[type_col].nunique()) if type_col else "Not detected")
+            m3.metric("Coordinate fields", "Detected" if lat_col and lon_col else "Not detected")
+
+            if type_col:
+                type_counts = (
+                    facility_df[type_col].fillna("Unknown").astype(str)
+                    .value_counts().rename_axis("Facility type").reset_index(name="Records")
+                )
+                st.markdown("**Records by facility type**")
+                st.bar_chart(type_counts.set_index("Facility type"))
+            else:
+                st.info("Facility type column not detected automatically. Review the column names before analysis.")
+
+            if lat_col and lon_col:
+                st.info(
+                    "Coordinate columns were detected by name only. Validate their coordinate reference system, "
+                    "units, and values before mapping."
+                )
+                try:
+                    points = facility_df[[lat_col, lon_col]].copy()
+                    points[lat_col] = pd.to_numeric(points[lat_col], errors="coerce")
+                    points[lon_col] = pd.to_numeric(points[lon_col], errors="coerce")
+                    valid = points[
+                        points[lat_col].between(-90, 90) & points[lon_col].between(-180, 180)
+                    ].dropna()
+                    st.caption(f"Rows with numeric coordinates in geographic ranges: {len(valid):,} of {len(facility_df):,}")
+                    if not valid.empty:
+                        st.map(valid.rename(columns={lat_col: "latitude", lon_col: "longitude"}))
+                except Exception as map_error:
+                    st.warning(f"Could not prepare a coordinate preview: {map_error}")
+            else:
+                st.warning(
+                    "No obvious latitude/longitude columns were detected. This file can be inspected, "
+                    "but it cannot be mapped as points until valid coordinates or spatial geometry are available."
+                )
+            st.download_button(
+                "Download unchanged copy as CSV",
+                data=facility_df.to_csv(index=False).encode("utf-8"),
+                file_name="ecohealth_facility_list_preview.csv",
+                mime="text/csv",
+            )
+        except Exception as facility_error:
+            st.error(f"Could not read this file: {facility_error}")
+            st.caption("Check that the file is a valid CSV or Excel workbook.")
 
 # ==============================================================================
 # TAB 3: AI, FHIR & USSD
