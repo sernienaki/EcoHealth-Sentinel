@@ -16,6 +16,7 @@ from outbreak import render_outbreak_tab, banner_lines, tab_label as outbreak_ta
 from packs import load_pack, context, available_packs, render_country_panel, BANNER
 from event_response import render_event_response_tab
 from outbreak_trends import render_outbreak_trends_tab
+from policy_deliberation_ui import render_policy_deliberation
 
 # Minimal, responsive digital-health visual system.
 st.markdown("""
@@ -508,7 +509,7 @@ role_messages = {
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko", "⚖️ Policy Deliberation" if st.session_state.lang == "en" else "⚖️ Majadiliano ya Sera"])
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD (CLEAN LAYOUT)
@@ -871,3 +872,9 @@ with tab7:
 # ==============================================================================
 with tab8:
     render_outbreak_trends_tab(st.session_state.lang)
+
+# ==============================================================================
+# TAB 9: MULTI-AGENT POLICY DELIBERATION (human-reviewed prototype)
+# ==============================================================================
+with tab9:
+    render_policy_deliberation(pack, region, data, st.session_state.lang)

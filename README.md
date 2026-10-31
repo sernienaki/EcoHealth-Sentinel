@@ -13,6 +13,7 @@ A bilingual (English and Kiswahili) public health surveillance and outbreak prep
 | Agents | Four agents (epidemiology, policy and legal, data protection, district medical officer) and an orchestrator, with visible reasoning steps |
 | Pipeline view | The ITU Y.3172 style ML pipeline (SRC, C, PP, M, P, D, SINK) with a sandbox lane and a production lane |
 | Policy RAG | Ingests official PDFs from links or uploads, hybrid search (BM25 plus character n-grams, optional dense embeddings), page level citations, abstention |
+| Policy deliberation | Five deterministic analytical perspectives, existing RAG evidence retrieval, structured Pydantic report, unresolved disagreements and human review |
 | Agent harness | Tool loop, input and output guardrails, step trace, optional language model brain |
 | Agent computer interface | Six validated tools, forgiving inputs, structured errors and a checker on the final answer |
 | Outbreak Watch | Sourced threat board with exposure by region, signal triage, readiness checklist, 42 day and 21 day countdown clocks, El Niño context |
@@ -74,7 +75,7 @@ On Streamlit Community Cloud, set the main file to `app.py`. To use a language m
 - Indicator data, weekly series and map markers are samples. The weekly series is simulated unless real counts are added under `weekly` in a pack.
 - Kenya's data, legal passages, targets and USSD codes are placeholders.
 - Regions are shaded with circles until a boundary file is added to a pack.
-- The agents and the signal triage use fixed rules, not a trained model. The triage rules are a demo and must be replaced with national case definitions.
+- The existing agents and signal triage use fixed rules, not a trained model. The policy deliberation module is also deterministic in this release; it is not an LLM debate. The triage rules are a demo and must be replaced with national case definitions.
 - The interface stress test uses a scripted agent that makes deliberate mistakes. It shows that the checks work. It does not measure a language model.
 - The retrieval threshold and the evaluation phrases need tuning on the real documents.
 - Login and the premium button are demonstrations. Real authentication, data hosting rules and a legal review of each country's data protection law are needed before any pilot.
