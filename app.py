@@ -454,7 +454,16 @@ st.sidebar.radio(L['theme'], THEME_CODES, format_func=lambda c: L['themes'][c], 
 
 PACK_BY_NAME = {name: load_pack(code) for code, name in available_packs()}
 LEGACY = [c for c in EAC_NATIONAL if c not in PACK_BY_NAME]
-country = st.sidebar.selectbox(L['country'], list(PACK_BY_NAME) + LEGACY, key='country')
+COUNTRY_OPTIONS = list(PACK_BY_NAME) + LEGACY
+# Tanzania should be the first-visit default, while keeping the user's
+# selection changeable for the rest of the session.
+DEFAULT_COUNTRY_INDEX = COUNTRY_OPTIONS.index("Tanzania") if "Tanzania" in COUNTRY_OPTIONS else 0
+country = st.sidebar.selectbox(
+    L['country'],
+    COUNTRY_OPTIONS,
+    index=DEFAULT_COUNTRY_INDEX,
+    key='country',
+)
 pack = PACK_BY_NAME.get(country)
 TARGET_KEYS = {'mal_target': 'mal', 'pos_target': 'mal_pos', 'chol_target': 'cholera', 'tb_target': 'tb', 'llin_target': 'llin',
                'mmr_target': 'mmr', 'imr_target': 'imr', 'anc_target': 'anc4', 'sba_target': 'sba', 'sam_target': 'sam',
