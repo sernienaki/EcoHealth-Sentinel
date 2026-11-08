@@ -18,51 +18,7 @@ from event_response import render_event_response_tab
 from outbreak_trends import render_outbreak_trends_tab
 from policy_deliberation_ui import render_policy_deliberation
 from resources import render_resource_library
-
-# Minimal, responsive digital-health visual system.
-st.markdown("""
-<style>
-:root {
-  --eco-ink: #172b2b;
-  --eco-muted: #647777;
-  --eco-line: #e3eae8;
-  --eco-surface: #f7faf9;
-  --eco-accent: #176b5b;
-}
-.block-container { max-width: 1440px; padding-top: 1.6rem; padding-bottom: 3rem; }
-h1, h2, h3 { color: var(--eco-ink); letter-spacing: -0.025em; }
-h1 { font-weight: 700; }
-[data-testid="stMetric"] {
-  background: var(--eco-surface);
-  border: 1px solid var(--eco-line);
-  padding: 1rem 1.1rem;
-  border-radius: 14px;
-}
-[data-testid="stMetricLabel"] { color: var(--eco-muted); }
-[data-testid="stTabs"] button { font-weight: 600; }
-[data-testid="stTabs"] button[aria-selected="true"] {
-  color: var(--eco-accent);
-  border-bottom-color: var(--eco-accent);
-}
-div[data-testid="stExpander"] {
-  border: 1px solid var(--eco-line);
-  border-radius: 12px;
-  overflow: hidden;
-}
-.stButton > button, .stDownloadButton > button {
-  border-radius: 10px;
-  font-weight: 600;
-  min-height: 2.6rem;
-}
-div[data-testid="stAlert"] { border-radius: 12px; }
-small, .stCaption { color: var(--eco-muted); }
-@media (max-width: 700px) {
-  .block-container { padding-left: 1rem; padding-right: 1rem; }
-  [data-testid="stMetric"] { padding: .7rem; }
-}
-</style>
-""", unsafe_allow_html=True)
-
+from ui_theme import apply_theme
 
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
@@ -227,69 +183,17 @@ LANG_CODES = ['en', 'sw']
 LANG_LABELS = {'en': "English", 'sw': "Kiswahili"}
 
 # ==============================================================================
-# 2. SAFE UI & THEME CSS (Prevents Icon Smudging)
+# 2. CENTRAL THEME SYSTEM
 # ==============================================================================
 st.set_page_config(page_title="EcoHealth Sentinel: Tanzania & EAC", layout="wide", initial_sidebar_state="expanded")
 
-# Widget keys 'lang' and 'theme' hold fixed codes, so choices survive language changes
-if 'theme' not in st.session_state: st.session_state.theme = 'light'
-if 'lang' not in st.session_state: st.session_state.lang = 'en'
+# Fixed theme and language codes keep preferences stable when labels change.
+if "theme" not in st.session_state:
+    st.session_state.theme = "light"
+if "lang" not in st.session_state:
+    st.session_state.lang = "en"
 
-def get_theme_css(theme):
-    if theme == 'dark':
-        return """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
-        
-        /* Only apply font to text elements, NOT icons or layout divs */
-        h1, h2, h3, h4, p, label, button, 
-        [data-testid="stMetricLabel"], 
-        [data-testid="stMetricValue"], 
-        [data-testid="stMetricDelta"],
-        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        .stApp { background-color: #0e1117; color: #fafafa; }
-        .stSidebar { background-color: #1a1d24; }
-        
-        [data-testid="stMetric"] {
-            background-color: #262730; padding: 15px; border-radius: 8px; 
-            border-left: 5px solid #4da6ff; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-        [data-testid="stMetricLabel"], [data-testid="stMetricValue"], [data-testid="stMetricDelta"] { 
-            color: #fafafa !important; 
-        }
-        
-        button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }
-        .stTabs [data-baseweb="tab-list"] { background-color: #1a1d24; }
-        .stTextInput > div > div > input, .stSelectbox > div > div > div, .stRadio > label { color: #fafafa !important; }
-        </style>
-        """
-    else:
-        return """
-        <style>
-        @import url('https://fonts.googleapis.com/css2?family=Times+New+Roman&display=swap');
-        
-        /* Only apply font to text elements, NOT icons or layout divs */
-        h1, h2, h3, h4, p, label, button, 
-        [data-testid="stMetricLabel"], 
-        [data-testid="stMetricValue"], 
-        [data-testid="stMetricDelta"],
-        .stMarkdown p, .stMarkdown h1, .stMarkdown h2, .stMarkdown h3, .stMarkdown h4 {
-            font-family: 'Times New Roman', Times, serif !important;
-        }
-        
-        [data-testid="stMetric"] {
-            background-color: #f8f9fa; padding: 15px; border-radius: 8px; 
-            border-left: 5px solid #0066cc; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-        
-        button[data-baseweb="tab"] { font-size: 14px !important; font-weight: bold !important; }
-        </style>
-        """
-
-st.markdown(get_theme_css(st.session_state.theme), unsafe_allow_html=True)
+apply_theme(st.session_state.theme)
 
 # ==============================================================================
 # 3. DATA STRUCTURES (ALL 20 DHIS2 INDICATORS) - ILLUSTRATIVE SAMPLE DATA
