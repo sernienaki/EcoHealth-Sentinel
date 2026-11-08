@@ -81,19 +81,19 @@
   {
     "id": "tanzania-development-vision-2050-draft",
     "title": "Tanzania Development Vision 2050",
-    "subtitle": "Draft Tanzania Development Vision 2050",
-    "publisher": "Tanzania Ministry of Finance",
-    "year": null,
+    "subtitle": "Official English publication",
+    "publisher": "United Republic of Tanzania, National Planning Commission",
+    "year": 2025,
     "country": "Tanzania",
     "category": "National Development Policies and Strategies",
-    "language": "Not confirmed",
-    "format": "Repository document",
-    "description": "Draft Tanzania Development Vision 2050 hosted in the Ministry of Finance repository. Publication year has not been confirmed.",
-    "description_sw": "Rasimu ya Dira ya Maendeleo ya Tanzania 2050 iliyohifadhiwa katika hazina ya kidijitali ya Wizara ya Fedha. Mwaka wa uchapishaji bado haujathibitishwa.",
-    "url": "https://repository.mof.go.tz/items/339ed148-b8d8-4d59-b3b1-35faa811b79e",
-    "direct_pdf_url": null,
-    "source": "Tanzania Ministry of Finance Repository",
-    "status": "Draft; publication year not confirmed"
+    "language": "English",
+    "format": "PDF",
+    "description": "Official Tanzania Development Vision 2050 published by the National Planning Commission.",
+    "description_sw": "Dira rasmi ya Maendeleo ya Tanzania 2050 iliyochapishwa na Tume ya Taifa ya Mipango.",
+    "url": "https://www.planning.go.tz/publications/vision-2050",
+    "direct_pdf_url": "https://www.planning.go.tz/uploads/documents/en-1752762713-THE%20TANZANIA%20DEVELOPMENT%20VISION%202050.pdf",
+    "source": "Tanzania National Planning Commission",
+    "status": "Official publication; English PDF link verified on National Planning Commission website"
   },
   {
     "id": "national-malaria-strategic-plan-2026-2030",
@@ -110,5 +110,37 @@
     "direct_pdf_url": null,
     "source": "MESA Malaria Resource Hub",
     "status": "Resource landing page; direct PDF link not confirmed"
+  },
+  {
+    "id": "who-afro-idsr-third-edition",
+    "title": "Technical Guidelines for Integrated Disease Surveillance and Response in the WHO African Region: Third Edition",
+    "publisher": "WHO Regional Office for Africa",
+    "year": 2019,
+    "country": "Regional (WHO African Region)",
+    "category": "Disease Surveillance and Epidemiology",
+    "language": "English",
+    "format": "PDF",
+    "description": "WHO AFRO technical guidance for integrated disease surveillance and response.",
+    "description_sw": "Mwongozo wa kiufundi wa WHO AFRO kuhusu ufuatiliaji na mwitikio jumuishi wa magonjwa.",
+    "url": "https://afro.who.int/publications/technical-guidelines-integrated-disease-surveillance-and-response-african-region-third",
+    "direct_pdf_url": "https://iris.who.int/bitstream/handle/10665/325015/WHO-AF-WHE-CPI-05.2019-eng.pdf",
+    "source": "WHO Regional Office for Africa",
+    "status": "Official third edition, March 2019."
+  },
+  {
+    "id": "pdpc-collection-processing-regulations-2023",
+    "title": "Personal Data Collection and Processing Regulations, 2023",
+    "publisher": "Personal Data Protection Commission, Tanzania",
+    "year": 2023,
+    "country": "Tanzania",
+    "category": "Legislation and Regulations",
+    "language": "English / Kiswahili",
+    "format": "PDF",
+    "description": "Regulations published by Tanzania's Personal Data Protection Commission.",
+    "description_sw": "Kanuni zilizochapishwa na Tume ya Ulinzi wa Taarifa Binafsi Tanzania.",
+    "url": "https://pdpc.go.tz/publications/the-personal-data-protection-personal-data-collection-and-processing-regulations-2023/",
+    "direct_pdf_url": null,
+    "source": "Personal Data Protection Commission",
+    "status": "Official publication page. Direct PDF link not yet configured for automated indexing."
   }
 ]
