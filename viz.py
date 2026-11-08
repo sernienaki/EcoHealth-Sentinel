@@ -126,7 +126,7 @@ def render_heatmap(L, lang, regions, ctx, region, theme):
     text = [[_fmt(k, regions[r][k]) for r in names] for k in order]
     c = SEV_COL
     scale = [[0, c[0]], [1 / 6, c[0]], [1 / 6, c[1]], [.5, c[1]], [.5, c[2]], [5 / 6, c[2]], [5 / 6, c[3]], [1, c[3]]]
-    fig = go.Figure(go.Heatmap(z=z, x=names, y=[_short(lang, k) for k in order], text=text, texttemplate="%{text}", textfont={"size": 11, "color": "#111111"},
+    fig = go.Figure(go.Heatmap(z=z, x=names, y=[_short(lang, k) for k in order], text=text, texttemplate="%{text}", textfont={"size": 11, "color": "#172B3A" if theme != "dark" else "#F1F5F8"},
                                colorscale=scale, zmin=0, zmax=3, showscale=False, xgap=2, ygap=2, hovertemplate="%{y}<br>%{x}: %{text}<extra></extra>"))
     if region in names:
         i = names.index(region)
