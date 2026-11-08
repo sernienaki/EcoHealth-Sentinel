@@ -352,8 +352,8 @@
       "status": "official_primary_source",
       "publisher": "Personal Data Protection Commission, Tanzania",
       "year": 2022,
-      "url": "https://pdpc.go.tz/media/media/THE_PERSONAL_DATA_PROTECTION_ACT.pdf",
-      "note": "Official PDPC-hosted PDF. Confirm applicable provisions and territorial scope before operational use."
+      "url": "https://pdpc.go.tz/documents/3/PERSONAL_DATA_PROTECTION_ACT_2022.pdf",
+      "note": "Official PDPC-hosted PDF. Direct download URL verified from the Commission publication page; confirm applicable provisions and territorial scope before operational use."
     },
     {
       "id": "pdpa_collection_regs2023",
@@ -380,11 +380,12 @@
       "id": "idsr3",
       "title": "Technical Guidelines for Integrated Disease Surveillance and Response in the WHO African Region, Third Edition",
       "type": "guideline",
-      "status": "official_primary_source",
+      "status": "official_source_page_upload_required",
       "publisher": "WHO Regional Office for Africa",
       "year": 2019,
-      "url": "https://iris.who.int/bitstream/handle/10665/325015/WHO-AF-WHE-CPI-05.2019-eng.pdf",
-      "note": "WHO AFRO third-edition guideline. Verify extracted booklet and page numbering."
+      "url": null,
+      "note": "Official WHO AFRO publication page. Automated IRIS download returned HTTP 403 in the deployed app; download the relevant third-edition booklet from the official page and upload the PDF through the RAG interface.",
+      "source_url": "https://www.afro.who.int/publications/technical-guidelines-integrated-disease-surveillance-and-response-african-region-third"
     },
     {
       "id": "vision2050",
