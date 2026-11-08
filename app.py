@@ -519,7 +519,7 @@ role_messages = {
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko", "⚖️ Policy Deliberation" if st.session_state.lang == "en" else "⚖️ Majadiliano ya Sera", "📚 Resource Library" if st.session_state.lang == "en" else "📚 Maktaba ya Rasilimali"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko", "⚖️ Policy Deliberation" if st.session_state.lang == "en" else "⚖️ Majadiliano ya Sera", "📚 Resource Library" if st.session_state.lang == "en" else "📚 Maktaba ya Rasilimali", "📖 Policy Documents (RAG)" if st.session_state.lang == "en" else "📖 Nyaraka za Sera (RAG)"])
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD (CLEAN LAYOUT)
@@ -895,3 +895,9 @@ with tab9:
 # ==============================================================================
 with tab10:
     render_resource_library(st.session_state.lang)
+
+# ==============================================================================
+# TAB 11: POLICY DOCUMENTS (RAG) - indexed policy retrieval, separate from Resource Library
+# ==============================================================================
+with tab11:
+    render_policy_library(pack, st.session_state.lang)
