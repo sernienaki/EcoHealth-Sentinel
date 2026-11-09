@@ -66,9 +66,20 @@ On Streamlit Community Cloud, set the main file to `app.py`. To use a language m
 
 `threats.json` holds each threat with its figures, status, sources and the date it was checked. Update the entries and the `as_of` date from WHO, Africa CDC and the Ministry of Health. Figures go stale quickly, and the app shows the check date.
 
-## Policy documents
+## Knowledge base and ITU alignment
 
-`pack_tz.json` lists HSSP V, the Personal Data Protection Act 2022, Vision 2050, Vision 2025, the 2022 census and the IDSR technical guidelines. HSSP V covered July 2021 to June 2026, and a successor plan was reported as being finalised, so add it when it is published. Build the index from the links or upload PDFs in the Policy documents panel.
+The `knowledge_base/` directory contains the submission evidence structure for EcoHealth Sentinel's public-health use case. It adapts the organisers' ITU AI Readiness knowledge-base pattern without copying their simulation application.
+
+- `knowledge_base/Inputs.md`: source manifest.
+- `knowledge_base/source_register.csv`: provenance, verification and indexing status.
+- `knowledge_base/methodology.md`: ingestion, retrieval, citations and evaluation method.
+- `knowledge_base/itu_alignment.md`: qualitative mapping to the six ITU readiness factors and selected toolkit requirements.
+- `knowledge_base/record_schema.json`: proposed auditable knowledge-record metadata.
+- `knowledge_base/evaluation/`: retrieval test cases and results template.
+- `knowledge_base/documents/`: instructions for source files; copyrighted documents are not included unless redistribution is permitted.
+
+**Important:** the manifest is not proof that all sources are indexed. The RAG index is built in the running app. See `knowledge_base/README.md` for source status, build steps and limitations. EcoHealth Sentinel does not claim ITU AI4G Sandbox hosting, formal ITU certification, live DHIS2/eIDSR integration or validated outbreak prediction.
+
 
 ## Limitations
 
