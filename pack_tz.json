@@ -406,6 +406,16 @@
       "year": 2021,
       "url": "https://mitu.or.tz/wp-content/uploads/2021/07/Tanzania-Health-Sector-Strategic-Plan-V-17-06-2021-Final-signed.pdf",
       "note": "Historical planning-cycle document; period ended June 2026. Do not present as current strategy."
+    },
+    {
+      "id": "itu_ai_ready_2026",
+      "title": "AI Ready: Analysis Towards a Standardized Readiness Framework — Version 2.0 Interim Report",
+      "type": "framework",
+      "status": "official_primary_source",
+      "publisher": "International Telecommunication Union (ITU)",
+      "year": 2026,
+      "url": "https://www.itu.int/dms_pub/itu-t/opb/ai4g/T-AI4G-AI4GOOD-2025-6-PDF-E.pdf",
+      "note": "Official ITU-hosted English PDF, January 2026, 55 pages. Covers six AI readiness factors: data, research, deployment support, standards, open source and code, and sandbox environments. Publisher copyright and reproduction notice applies. Inclusion here enables the existing RAG link-ingestion workflow; verify successful indexing and page-level retrieval in the deployed app."
     }
   ],
   "neighbors": [
