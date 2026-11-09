@@ -1,0 +1,31 @@
+{
+  "schema_name": "ecohealth_knowledge_record",
+  "schema_version": "1.0.0",
+  "description": "Proposed common metadata contract for a source document and retrieved page-level text chunk. The existing RAG runtime currently uses a smaller chunk object; adoption of every field is future work.",
+  "required": ["record_id", "source_id", "document_title", "publisher", "document_type", "domain", "source_url", "page_number", "text", "verification_status", "ingested_at"],
+  "properties": {
+    "record_id": {"type": "string"},
+    "source_id": {"type": "string", "description": "Stable identifier matching source_register.csv."},
+    "document_title": {"type": "string"},
+    "publisher": {"type": "string"},
+    "publication_year": {"type": ["integer", "null"]},
+    "version": {"type": ["string", "null"]},
+    "document_type": {"type": "string", "enum": ["law", "regulation", "national_plan", "national_strategy", "historical_sector_strategy", "technical_guideline", "technical_recommendation", "framework", "research", "case_study", "other"]},
+    "domain": {"type": "string"},
+    "language": {"type": ["string", "null"], "description": "BCP-47 language tag, e.g. en or sw."},
+    "source_url": {"type": "string", "format": "uri"},
+    "retrieved_at": {"type": ["string", "null"], "format": "date-time"},
+    "file_sha256": {"type": ["string", "null"]},
+    "page_number": {"type": "integer", "minimum": 1},
+    "chunk_index": {"type": ["integer", "null"], "minimum": 0},
+    "text": {"type": "string"},
+    "itu_factors": {"type": "array", "items": {"type": "string", "enum": ["data", "research", "deployment_support", "standards", "open_source_and_code", "sandbox_environments"]}},
+    "country_or_region": {"type": ["string", "null"]},
+    "effective_from": {"type": ["string", "null"], "format": "date"},
+    "effective_to": {"type": ["string", "null"], "format": "date"},
+    "verification_status": {"type": "string", "enum": ["verified_primary_source", "official_link_recorded", "publisher_copy_review_pending", "unverified", "superseded", "historical"]},
+    "indexing_status": {"type": "string", "enum": ["indexed", "not_indexed", "manual_upload_required", "download_failed", "not_applicable"]},
+    "ingested_at": {"type": "string", "format": "date-time"},
+    "review_required": {"type": "boolean", "default": true}
+  }
+}
