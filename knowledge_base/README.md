@@ -1,49 +1,47 @@
-# Tanzania policy knowledge base
+# EcoHealth Sentinel Knowledge Base
 
-This repository maintains two complementary knowledge resources:
+## Purpose
+This knowledge base supports evidence-informed public-health surveillance, outbreak preparedness, policy interpretation and responsible AI use in the EcoHealth Sentinel prototype. It adapts the organisers' ITU AI Readiness knowledge-base submission pattern to a public-health use case. It is not a copy of the ITUAIReadiness simulation and does not claim to implement the complete ITU AI-RE Toolkit.
 
-1. **Public Resource Library** — a bilingual catalogue of source links for users and reviewers.
-2. **AI retrieval knowledge base (RAG)** — page-aware PDF/text ingestion, chunking, hybrid retrieval, citations and abstention implemented in `rag.py`.
+## Included materials
+- `Inputs.md`: source collection scope and organisation.
+- `source_register.csv`: provenance, intended use, verification and indexing status.
+- `methodology.md`: ingestion, retrieval, citations, abstention and human review.
+- `itu_alignment.md`: qualitative mapping to ITU AI Readiness factors and selected toolkit requirements.
+- `record_schema.json`: proposed common metadata format for auditable knowledge records.
+- `evaluation/`: reproducible retrieval test-case and result templates.
+- `documents/`: source-file organisation and reuse instructions.
 
-## Primary documents configured for RAG
+## Current implementation
+The Streamlit **Policy Documents (RAG)** tab uses the existing `rag.py` implementation: PDF/text ingestion, page-aware chunks, BM25 and character n-gram TF-IDF retrieval, optional dense embeddings, reciprocal-rank fusion, citations, abstention and retrieval evaluation.
 
-| ID | Document | Publisher | Status |
-|---|---|---|---|
-| `pdpa2022` | Personal Data Protection Act, 2022 | Personal Data Protection Commission | Official primary-source PDF |
-| `cholera_plan_2023_2027` | National Multi-Sectoral Cholera Prevention and Control Plan 2023–2027 | Tanzania Ministry of Health | Official primary-source PDF |
-| `idsr3` | WHO AFRO IDSR Technical Guidelines, Third Edition | WHO Regional Office for Africa | Official primary-source PDF |
-| `vision2050` | Tanzania Development Vision 2050 | National Planning Commission | Official primary-source PDF |
-| `hssp5` | Health Sector Strategic Plan V, 2021–2026 | Tanzania Ministry of Health | Historical planning cycle ended June 2026 |
+The index is built at runtime from country-pack documents or uploaded files. A catalogue entry does not mean a document has been downloaded or indexed. The local runtime index may not survive a Streamlit Cloud restart or redeployment; rebuild when needed.
 
-The Personal Data Collection and Processing Regulations, 2023 are listed in the public library. The official PDPC publication page is available, but a direct PDF URL is not configured for automated ingestion until it is confirmed. Download the PDF from the publisher and upload it through the RAG interface.
+## Evidence status and limitations
+- Tanzania country-pack indicator values, map points and assistant examples are illustrative/demo data, not live DHIS2 or eIDSR feeds.
+- No live DHIS2, eIDSR, GoTHoMIS/FHIR, SMS or USSD integration is claimed.
+- The risk engine is rule-based, not a validated outbreak prediction model.
+- HSSP V (2021–2026) is historical; its planning period ended June 2026.
+- WHO AFRO IDSR PDF automated download returned HTTP 403 in the deployed app. Obtain it from the official publication page and upload it manually.
+- PDPA source URL was corrected in PR #16; verify successful indexing in the deployed app.
+- The 2023 PDPC regulations have an official publication page recorded, but no verified direct PDF URL.
+- Retrieval citations locate extracted text; they do not establish legal interpretation, clinical validity or regulatory approval. Human review is required.
+- There is no verified evidence that this knowledge base is hosted in the ITU AI for Good Sandbox.
 
-## How to make the KB available in the running app
+## Build and verify
+1. Review `source_register.csv`; obtain documents from official publishers.
+2. Confirm title, publisher, version, date and reuse permissions.
+3. Configure direct PDF URLs only when the endpoint is verified; otherwise upload a publisher-obtained file.
+4. Open **Policy Documents (RAG)**, select the relevant country pack, and build the index or upload sources.
+5. Record actual document/chunk counts and failures. Do not infer indexing from the catalogue.
+6. Run `evaluation/retrieval_test_cases.csv`; record observed outcomes in `evaluation/evaluation_results.csv`.
+7. Check every important answer against its source page and obtain qualified review for high-impact interpretation.
 
-1. Open the **Policy documents (RAG)** panel for Tanzania.
-2. Select **Build index from official links**.
-3. Check document/chunk counts and the retrieval method.
-4. Search for questions answerable from each indexed document.
-5. Expand results and verify document title, page number and passage.
-6. Run retrieval evaluation and record actual results.
+## Relationship to the organisers' reference
+The [ITUAIReadiness repository](https://github.com/CrashingGuru/ITUAIReadiness) provides a useful pattern: input-document manifest, framework references, ingestion, knowledge-base layer and structured metadata. EcoHealth Sentinel adapts that pattern to public-health evidence and retains its existing RAG implementation. It does not import the organisers' simulation agents, scoring engine, ChromaDB implementation or national AI strategy corpus.
 
-The public catalogue is available separately under **Public Resource Library**. It links users to original publishers; it does not itself index files.
-
-## Evidence and safety rules
-
-- A catalogue entry is not proof that a PDF has been downloaded or indexed.
-- Only the primary-source documents listed above are configured for automated PDF ingestion.
-- HSSP V is historical context, not the current health-sector strategy after June 2026.
-- The old `kb` passages in `pack_tz.json` remain explicitly marked `placeholder`. Do not present them as legal quotations or verified policy requirements. Replace them only with passages checked against source PDFs.
-- Do not treat illustrative country-pack indicators as current surveillance data.
-- Retrieval citations show where text was extracted; they do not establish that an interpretation is legally authoritative. Human review remains necessary.
-- The current app saves the generated index to a local runtime path. Streamlit-hosted local files may not persist across rebuilds or restarts; rebuild after a fresh deployment/session unless durable storage is added.
-- This KB does not imply live DHIS2 connectivity, regulatory approval or operational public-health alerting.
-
-## Source links
-
-- PDPC Act: https://www.pdpc.go.tz/media/media/THE_PERSONAL_DATA_PROTECTION_ACT.pdf
-- PDPC collection and processing regulations: https://pdpc.go.tz/publications/the-personal-data-protection-personal-data-collection-and-processing-regulations-2023/
-- Tanzania cholera plan: https://www.moh.go.tz/storage/app/uploads/public/677/be0/2c8/677be02c88d8a451323386.pdf
-- WHO AFRO IDSR third edition: https://iris.who.int/bitstream/handle/10665/325015/WHO-AF-WHE-CPI-05.2019-eng.pdf
-- Tanzania Development Vision 2050: https://www.planning.go.tz/uploads/documents/en-1752762713-THE%20TANZANIA%20DEVELOPMENT%20VISION%202050.pdf
-- HSSP V: https://mitu.or.tz/wp-content/uploads/2021/07/Tanzania-Health-Sector-Strategic-Plan-V-17-06-2021-Final-signed.pdf
+## Key references
+- [ITU AI Ready framework publication](https://www.itu.int/epublications/publication/ai-ready-analysis-towards-a-standardized-readiness-framework)
+- [ITU AI Ready report PDF](https://www.itu.int/dms_pub/itu-t/opb/ai4g/T-AI4G-AI4GOOD-2025-6-PDF-E.pdf)
+- [ITU-T Y.3172](https://www.itu.int/rec/T-REC-Y.3172)
+- Tanzania and WHO primary sources: see `source_register.csv`.
