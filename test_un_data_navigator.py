@@ -46,3 +46,17 @@ def test_source_registry_marks_unimplemented_sources_as_discovery_only():
     assert by_id["unsd_sdg_api"]["status"] == "implemented_pr24"
     assert by_id["who_gho"]["status"] == "discovery_only"
     assert by_id["unicef_data"]["status"] == "discovery_only"
+
+
+def test_goals_api_requires_list_response(monkeypatch):
+    monkeypatch.setattr(un_sdg_api, "_get_json", lambda path, params=None: {"unexpected": []})
+    with pytest.raises(un_sdg_api.UNSDGAPIError):
+        un_sdg_api.list_goals()
+
+
+def test_geo_code_must_be_numeric(monkeypatch):
+    called = []
+    monkeypatch.setattr(un_sdg_api, "_get_json", lambda *a, **k: called.append(True))
+    with pytest.raises(ValueError):
+        un_sdg_api.fetch_series_for_area("SERIES_A", "TZA")
+    assert called == []
