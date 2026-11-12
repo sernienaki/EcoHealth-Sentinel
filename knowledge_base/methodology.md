@@ -51,3 +51,16 @@ The current app builds and stores the index in its local runtime. Streamlit Clou
 - WHO AFRO IDSR IRIS PDF download returned HTTP 403 in the deployed app; use the official publication page and manual PDF upload.
 - The PDPA 2022 URL was corrected in PR #16; confirm successful indexing in the deployed app.
 - The 2023 PDPC regulations currently have an official publication page in the register, not a verified direct PDF URL.
+
+
+## 10. UN System Data Commons statistical observations
+
+The optional **UN Data Intelligence** tab uses the UN System Data Commons custom deployment through its REST V2 GET endpoints. It resolves statistical-variable candidates and retrieves observations for a selected geographic entity and variable.
+
+The integration retains source-facet metadata, including facet ID, dataset/import name, provenance URL, unit, measurement method, observation period, scaling factor and aggregate flag when returned. Each facet is preserved as a separate series. Do not sum or merge observations from different facets by default: one variable/entity pair can have multiple sources or measurement methods.
+
+Before analysis, verify the variable definition, geographic level, date granularity, unit, source organisation, provenance URL and reference period. National statistics must not be presented as district or regional estimates. UN observations provide contextual aggregate statistics and do not replace Tanzania NBS, Ministry of Health or DHIS2 administrative data.
+
+The initial integration is read-only. It does not create a persistent local statistical database, schedule automatic refreshes, or overwrite the existing country-pack and DHIS2 demonstration values. The existing app demo banner and data-status warnings remain in force.
+
+See [UN System Data Commons integration](un_data_commons.md) for endpoint configuration, response parsing, verification and limitations.

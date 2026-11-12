@@ -19,6 +19,7 @@ A bilingual (English and Kiswahili) public health surveillance and outbreak prep
 | Outbreak Watch | Sourced threat board with exposure by region, signal triage, readiness checklist, 42 day and 21 day countdown clocks, El Niño context |
 | Country packs | One JSON file per country: regions, targets, languages, USSD networks, legal references, policy passages |
 | Evaluation | Task, safety, robustness, Kiswahili, alignment, retrieval and interface tests |
+| UN Data Intelligence | Read-only UN System Data Commons variable discovery, observations, facet provenance and CSV export |
 
 ## Design choices
 
@@ -39,6 +40,8 @@ packs.py          Country pack loader and validator
 viz.py            Bullet charts, heatmap, risk map, weekly trend
 evals.py          Evaluation suite
 outbreak.py       Outbreak Watch
+un_data_commons.py UN System Data Commons REST client and Streamlit tab
+test_un_data_commons.py Mocked API client tests
 pack_tz.json      Tanzania country pack
 pack_ke.json      Kenya country pack (PLACEHOLDER data)
 threats.json      Sourced and dated threat board
@@ -52,6 +55,7 @@ test_ecohealth.py Tests
 pip install -r requirements.txt
 streamlit run app.py
 python test_ecohealth.py
+python -m unittest test_un_data_commons.py
 ```
 
 On Streamlit Community Cloud, set the main file to `app.py`. To use a language model, add `ANTHROPIC_API_KEY` to the app secrets. Without it everything runs on the rule based brain.
@@ -76,10 +80,15 @@ The `knowledge_base/` directory contains the submission evidence structure for E
 - `knowledge_base/itu_alignment.md`: qualitative mapping to the six ITU readiness factors and selected toolkit requirements.
 - `knowledge_base/record_schema.json`: proposed auditable knowledge-record metadata.
 - `knowledge_base/evaluation/`: retrieval test cases and results template.
+- `knowledge_base/un_data_commons.md`: UN System Data Commons API integration, source-facet handling, configuration and limitations.
 - `knowledge_base/documents/`: instructions for source files; copyrighted documents are not included unless redistribution is permitted.
 
 **Important:** the manifest is not proof that all sources are indexed. The RAG index is built in the running app. See `knowledge_base/README.md` for source status, build steps and limitations. EcoHealth Sentinel does not claim ITU AI4G Sandbox hosting, formal ITU certification, live DHIS2/eIDSR integration or validated outbreak prediction.
 
+
+## UN System Data Commons integration
+
+The **UN Data Intelligence** tab provides read-only variable discovery and observation retrieval from the UN System Data Commons custom deployment. It preserves source facets and provenance metadata, and does not merge observations from different datasets. See `knowledge_base/un_data_commons.md` for API details and limitations. This is aggregate contextual statistics, not a live DHIS2 feed.
 
 ## Limitations
 
