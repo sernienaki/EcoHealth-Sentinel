@@ -104,3 +104,21 @@ The **UN Data Intelligence** tab provides read-only variable discovery and obser
 ## Roadmap
 
 Live DHIS2 connection, real boundary files, real weekly data, a language model evaluation of both tool sets, an MCP server for country packs, automated tests on every commit, and field pilots in one Tanzanian district and one Kenyan county.
+
+
+## Stakeholder intelligence workspace (PR #23)
+
+The additive **Stakeholder Workspace** tab provides decision-support context, structural data diagnostics and a research workspace for a mixed pilot audience. It reuses the selected role, country, region and UN observations already held in the Streamlit session. It does not change the existing dashboard, risk rules, country packs, authentication flow or UN Data Commons source records.
+
+- `stakeholder_workspaces.py`: stakeholder-facing views.
+- `data_quality.py`: structural completeness, duplicate-key, type, facet, date and provenance diagnostics.
+- `indicator_interpretation.py`: descriptive summaries only; no causal inference.
+- `research_laboratory.py`: facet filtering, table, time-series plot and CSV export.
+- `policy_evidence.py`: evidence note with explicit prototype limitations.
+- `knowledge_base/stakeholder_framework.md`: mixed-audience needs, safeguards and pilot evaluation plan.
+- `knowledge_base/data_quality_framework.md`: quality dimensions, interpretation rules and limitations.
+- `test_stakeholder_intelligence.py`: unit tests.
+
+The login and role selector remain demonstration controls, not production access control. Country-pack values and map markers remain illustrative. The workspace does not persist data, schedule refreshes or infer local values from national statistics.
+
+Run the new tests with `python -m pytest test_stakeholder_intelligence.py test_un_data_commons.py`. Run the existing suite with `python test_ecohealth.py`.

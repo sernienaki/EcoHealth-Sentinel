@@ -54,3 +54,8 @@ Official technical references:
 - REST V2 resolve API: https://docs.datacommons.org/api/rest/v2/resolve
 
 The API integration does not establish that a particular Tanzania indicator is available. Variable DCIDs and observations are discovered at runtime and must be verified individually.
+
+
+## 7. Stakeholder workspace data boundary
+
+The stakeholder workspace reuses aggregate observations retrieved through the UN System Data Commons tab. It does not add a new source or establish that a Tanzania indicator exists. See `stakeholder_framework.md` and `data_quality_framework.md` for stakeholder use cases, diagnostics and safeguards. Existing demonstration country-pack values and sample map markers remain illustrative.
