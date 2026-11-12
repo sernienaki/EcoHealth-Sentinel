@@ -64,3 +64,12 @@ Before analysis, verify the variable definition, geographic level, date granular
 The initial integration is read-only. It does not create a persistent local statistical database, schedule automatic refreshes, or overwrite the existing country-pack and DHIS2 demonstration values. The existing app demo banner and data-status warnings remain in force.
 
 See [UN System Data Commons integration](un_data_commons.md) for endpoint configuration, response parsing, verification and limitations.
+
+
+## 11. Stakeholder intelligence and structural data diagnostics
+
+The Stakeholder Workspace presents existing prototype context for government/public-health officials, district teams, health workers, researchers and civil-society organisations. It does not create a new source of truth or production access-control layer. The existing role selector is a demonstration control.
+
+The structural diagnostics report required-field completeness, duplicate key rows, numeric parse failures, facet count, date range, unit values and missing provenance URLs. These are descriptive checks of the retrieved table only. They are not a composite quality score, source validation, representativeness assessment or proof of timeliness. Missing values and duplicate rows are not silently imputed or deleted.
+
+The research workspace filters by source facet, displays the selected observations, optionally plots values by period and exports the current aggregate view as CSV. Descriptive summaries report observed values only. They do not establish causal relationships, explain drivers or justify interventions. See `knowledge_base/stakeholder_framework.md` and `knowledge_base/data_quality_framework.md`.
