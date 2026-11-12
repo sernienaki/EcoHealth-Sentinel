@@ -95,7 +95,9 @@ def render_sdg_explorer(lang: str = "en") -> None:
     goal_labels = {f"{g.get('code','')} — {g.get('title','')}": g for g in goals}
     selected_goal_label = st.selectbox(tr("Choose a development goal", "Chagua lengo la maendeleo"), list(goal_labels), key="sdg_goal")
     goal = goal_labels[selected_goal_label]
-    indicators = goal.get("indicators", []) or []
+    indicators = []
+    for target in goal.get("targets", []) or []:
+        indicators.extend(target.get("indicators", []) or [])
     if not indicators:
         st.info(tr("The API did not return indicator details for this goal. Use the official metadata link.", "API haikurudisha maelezo ya viashiria vya lengo hili. Tumia kiungo rasmi cha metadata."))
         st.link_button(tr("Open official SDG metadata", "Fungua metadata rasmi za SDG"), "https://unstats.un.org/sdgs/metadata/")
