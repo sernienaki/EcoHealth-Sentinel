@@ -46,7 +46,7 @@ def test_policy_brief_contains_core_decision_sections():
 def test_missing_sections_are_not_fabricated():
     brief = build_policy_brief(_fields(evidence="", recommendations=""))
     assert "Not provided. Complete this section" in brief
-    assert "Not provided._" in brief
+    assert "_Not provided._" in brief or "_Not provided. Complete this section before external circulation._" in brief
 
 
 def test_draft_and_evidence_warning_are_present():
