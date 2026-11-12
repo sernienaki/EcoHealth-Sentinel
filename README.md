@@ -122,3 +122,25 @@ The additive **Stakeholder Workspace** tab provides decision-support context, st
 The login and role selector remain demonstration controls, not production access control. Country-pack values and map markers remain illustrative. The workspace does not persist data, schedule refreshes or infer local values from national statistics.
 
 Run the new tests with `python -m pytest test_stakeholder_intelligence.py test_un_data_commons.py`. Run the existing suite with `python test_ecohealth.py`.
+
+
+## UN Data Navigator (PR #24)
+
+The additive **UN Data Navigator** helps non-specialists understand statistics through plain-language English and Kiswahili explanations, illustrative examples, source limitations and a discoverable UN data source registry.
+
+- `un_sdg_api.py`: read-only connector for the UNSD SDG API; uses documented GET endpoints and defaults to Tanzania UN M49 geography code 834.
+- `un_data_sources.py`: source registry that distinguishes implemented connectors from discovery-only portals.
+- `indicator_glossary.py`: bilingual educational glossary; generic explanations do not replace official source definitions.
+- `data_navigator.py`: Streamlit UI for SDG exploration, indicator explanations and source discovery.
+- `knowledge_base/pr24_un_data_navigator_spec.md`: implementation scope and acceptance criteria.
+- `knowledge_base/un_data_source_architecture.md`: connector governance and status.
+- `knowledge_base/plain_language_data_guide.md`: explanation-card and translation principles.
+- `test_un_data_navigator.py`: mocked connector and glossary tests.
+
+Only the UN System Data Commons (existing) and UNSD SDG API (added in PR #24) are marked as implemented. WHO GHO, UNICEF Data, WHO/UNICEF JMP, UN World Population Prospects and UNdata are discovery-only in this release; no API integration is claimed for them.
+
+Run tests:
+```bash
+python -m pytest test_un_data_navigator.py test_stakeholder_intelligence.py test_un_data_commons.py
+python test_ecohealth.py
+```

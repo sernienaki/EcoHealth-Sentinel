@@ -21,6 +21,7 @@ from resources import render_resource_library
 from ui_theme import apply_theme
 from un_data_commons import render_un_data_intelligence
 from stakeholder_workspaces import render_stakeholder_workspaces
+from data_navigator import render_data_navigator
 
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
@@ -425,7 +426,7 @@ role_messages = {
 }
 st.success(role_messages[st.session_state.lang][role])
 
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko", "⚖️ Policy Deliberation" if st.session_state.lang == "en" else "⚖️ Majadiliano ya Sera", "📚 Resource Library" if st.session_state.lang == "en" else "📚 Maktaba ya Rasilimali", "📖 Policy Documents (RAG)" if st.session_state.lang == "en" else "📖 Nyaraka za Sera (RAG)", "🌐 UN Data Intelligence" if st.session_state.lang == "en" else "🌐 Takwimu za UN", "👥 Stakeholder Workspace" if st.session_state.lang == "en" else "👥 Eneo la Wadau"])
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12, tab13, tab14 = st.tabs([L['tab1'], L['tab2'], L['tab3'], L['tab4'], tab_label(st.session_state.lang), outbreak_tab_label(st.session_state.lang), "🚨 Event & Response" if st.session_state.lang == "en" else "🚨 Matukio na Majibu", "📈 Outbreak Trends" if st.session_state.lang == "en" else "📈 Mwenendo wa Milipuko", "⚖️ Policy Deliberation" if st.session_state.lang == "en" else "⚖️ Majadiliano ya Sera", "📚 Resource Library" if st.session_state.lang == "en" else "📚 Maktaba ya Rasilimali", "📖 Policy Documents (RAG)" if st.session_state.lang == "en" else "📖 Nyaraka za Sera (RAG)", "🌐 UN Data Intelligence" if st.session_state.lang == "en" else "🌐 Takwimu za UN", "👥 Stakeholder Workspace" if st.session_state.lang == "en" else "👥 Eneo la Wadau", "🧭 UN Data Navigator" if st.session_state.lang == "en" else "🧭 Mwongozo wa Data za UN"])
 
 # ==============================================================================
 # TAB 1: EXECUTIVE DASHBOARD (CLEAN LAYOUT)
@@ -821,3 +822,8 @@ with tab13:
         st.session_state.lang, role, country, region, data,
         st.session_state.get('un_dc_frame'),
     )
+
+
+# TAB 14: UN DATA NAVIGATOR — plain-language explanations and SDG data
+with tab14:
+    render_data_navigator(st.session_state.lang)
