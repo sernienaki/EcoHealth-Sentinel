@@ -39,3 +39,18 @@ Add sources only when publisher, version, date, relevance and permissions can be
 - Do not convert unverified country-pack placeholder passages into policy quotations.
 - Keep superseded documents labelled historical and record their effective period.
 - Store source files only where licence and publisher terms permit redistribution; otherwise provide official links and use an authorised upload workflow.
+
+
+## 6. UN System Data Commons — aggregate statistical observations
+
+| Source | Type | Intended use | Status |
+|---|---|---|---|
+| UN System Data Commons REST V2 custom deployment | Statistical knowledge graph/API | Discover statistical variables and retrieve aggregate observations for country-level context and cross-country analysis | Integration documented in `un_data_commons.py`; runtime availability and each variable's source facet, date range, unit and provenance must be verified before use |
+
+Official technical references:
+- UN System Data Commons getting started: https://data.un.org/undatacommons/docs/getting-started
+- UN Statistics Division API examples: https://github.com/UNStats/OpenSourceWeek2026
+- REST V2 observation API: https://docs.datacommons.org/api/rest/v2/observation
+- REST V2 resolve API: https://docs.datacommons.org/api/rest/v2/resolve
+
+The API integration does not establish that a particular Tanzania indicator is available. Variable DCIDs and observations are discovered at runtime and must be verified individually.
