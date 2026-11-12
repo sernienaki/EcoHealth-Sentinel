@@ -22,6 +22,7 @@ from ui_theme import apply_theme
 from un_data_commons import render_un_data_intelligence
 from stakeholder_workspaces import render_stakeholder_workspaces
 from data_navigator import render_data_navigator
+from policy_brief import render_policy_brief_tab
 
 # ==============================================================================
 # 1. TRANSLATION DICTIONARY (ENGLISH / KISWAHILI)
@@ -718,44 +719,8 @@ with tab3:
 # TAB 4: POLICY BRIEF
 # ==============================================================================
 with tab4:
-    st.header(L['brief_header'])
-    st.caption(f"🧪 {L['demo_brief']}")
-    brief = f"""
-*** {T['en']['demo_tag']} ***
+    render_policy_brief_tab(st.session_state.lang, region, country, role_label, data)
 
-POLICY BRIEF: EcoHealth Sentinel
-Region: {region}, {country}
-Role Focus: {role_label}
-Date: {datetime.now().strftime('%B %d, %Y')}
-
-1. EXECUTIVE SUMMARY
-{region} faces a double burden of disease. Malaria incidence is {data['mal']} per 1,000, and Cholera cases are at {data['cholera']}. Maternal Mortality is {data['mmr']} per 100,000. Immediate action is required.
-
-2. KEY FINDINGS (20 Core DHIS2 Indicators)
-- Communicable: Malaria ({data['mal']}/1k), Cholera ({data['cholera']}), TB ({data['tb']}/100k).
-- MNCH: MMR ({data['mmr']}), IMR ({data['imr']}), FIC ({data['fic']}%).
-- NCDs: Hypertension ({data['htn']}%), Diabetes ({data['dm']}%).
-- Health Systems: Stockout ({data['stockout']}%), OOP ({data['oop']}%).
-
-3. RECOMMENDATIONS (Tailored for {role_label})
-1. Deploy OCV and WASH interventions for Cholera.
-2. Distribute LLINs and RDTs for Malaria.
-3. Scale up ANC and SBA services to reduce MMR.
-4. Integrate NCD screening into community outreach.
-
-4. MONITORING
-- Reduce Cholera cases by 20% in 30 days.
-- Increase FIC to >{L['fic_target']}% in 6 months.
-- Maintain medicine stockout rate below {L['stock_target']}%.
-
-References: {policy_text}, {refs}.
-
-NOTE: All figures above are illustrative samples. Verify with official DHIS2 data before sharing.
-"""
-    st.text_area(L['preview'], brief, height=400)
-    st.download_button(L['download'], brief, file_name=f"Brief_{region}_{country}.txt")
-
-# ==============================================================================
 # TAB 5: AGENTS AND ITU Y.3172 PIPELINE
 # ==============================================================================
 with tab5:
